@@ -2,7 +2,7 @@
 
 Data files placed in this in this folder. 
 
-## Quarterly_Real_GDP_Growth.xlsx
+## Quarterly Real GDP Growth
 
 **Description:** 
 This table presents Gross Domestic Product (GDP) and its main components according to the expenditure approach from 2018 to 2025.
