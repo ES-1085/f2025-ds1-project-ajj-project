@@ -1,6 +1,6 @@
 Project proposal
 ================
-Team name
+AJJ
 
 ``` r
 library(tidyverse)

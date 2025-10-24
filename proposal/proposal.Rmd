@@ -1,42 +1,96 @@
 ---
 title: "Project proposal"
-author: "Team name"
+author: "AJJ: Armin, Jiwon, Jamari
 output: github_document
 ---
 
 ```{r load-packages, message = FALSE}
 library(tidyverse)
 library(broom)
-## Add any additional packages you are using here
+library(readxl)
+library(dplyr)
 ```
 
 ## 1. Introduction
 
-The introduction should introduce your general research question(s) and your data (where it came from, how it was collected, what are the cases, what are the variables, etc.).
+The data used in our group project is sourced from the OECD, specifically from the dataset “Quarterly Real GDP Growth – OECD Countries.” This dataset provides quarterly GDP growth figures for OECD member nations, covering the period from 2018 Q2 to 2025 Q2. The purpose of collecting this data is to examine how nations recovered economically following the devastating impacts of the COVID-19 pandemic, with a particular focus on comparing the varying degrees of recovery across countries. 
 
-Text goes here. Refer to the Markdown Quick Reference: Help -> Markdown Quick Reference. 
+Our dataset from the OECD contains 1,523 data points, 31 variables, and 54 observations. We plan to exclude the “Non-OECD economies” observation since it contains no data. To fill this gap, our team is considering incorporating an additional dataset from the World Bank Group, which tracks GDP growth for both OECD and non-OECD countries. This will allow us to develop a more comprehensive and comparative view of national economic performance. 
+
+For this project, our research focuses on the varying levels of economic recovery around the world following the COVID-19 pandemic. We aim to closely examine the observations in our dataset to identify potential patterns (such as geographic or regional trends) that reveal which countries recovered quickly and which continued to face significant challenges. 
+
+Some of the questions we hope to explore include: 
+
+* Are there clear geographic patterns indicating which countries were more effective in rebounding economically? 
+* How much did the average year-on-year GDP growth rates vary across countries and continents, and were there any notable outliers?
+* What factors might explain why some countries recovered more successfully than others? We plan to compare and analyze selected countries. 
+* How can we categorize countries into groups such as stagnating, recovering, and booming, and what does the global distribution of these categories reveal about overall recovery trends?
+
 
 ## 2. Data
 
-Text goes here. Place your data in the /data folder, and add dimensions and codebook to the README in that folder. Then print out the output of glimpse() or skim() of your data frame.
+```{r load-data}
+Clean_Excel_OECD_Dataset <- read_excel("data/ignore/Clean Excel - OECD Data.xlsx")
+# View(Clean_Excel_OECD_Data)
 
-```{r}
-# Code goes here
-# Read in your data file
-# Print the output of glimpse() or skim()
+World_Bank_Clean_Dataset <- read_csv("data/World Bank - Clean Dataset.csv")
+# View(World_Bank_Clean_Dataset)
+```
+
+```{r dimensions}
+dim(Clean_Excel_OECD_Data)
+dim(World_Bank_Clean_Dataset)
+```
+
+```{r glimpse}
+glimpse(Clean_Excel_OECD_Data)
+glimpse(World_Bank_Clean_Dataset)
 ```
 
 ## 3. Data analysis plan
 
-Text goes here.
-- What variables will you visualize to explore your research questions?
-- Will there be any other data that you need to find to help with your research question?
+The variables we will be visualizing to explore our research question are the following:
+
+* GDP_growth: Core measure of economic recovery; allows comparison across countries and time.
+* Quarter: Time-series analysis to see trends over time between 2018 Q2 to 2025 Q2.
+* Country: Compare recovery across nations and regions.
+* Recovery_category: Helps visualize and compare group-level performance; categorized as “Stagnating,” “Recovering,” “Booming”.
+* Continent/region: Explore geographic patterns in recovery
+
+Other additional data we may explore are datasets which will categorize the levels of economic recovery from COVID-19 into performance groups. These categories may include classifications such as stagnating, recovering, and booming. This transformation will allow us to better visualize and compare how different countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
+ 
+
 - Very preliminary exploratory data analysis, including some summary statistics and visualizations, along with some explanation on how they help you learn more about your data. (You can add to these later as you work on your project.)
-- The data visualization(s) that you believe will be useful in exploring your question(s). (You can update these later as you work on your project.)
+
+- The data visualization(s) that you believe will be useful in exploring your question(s).
 
 
-```{r}
-# Code goes here
-# Code to calculate summary statistics
-# Code for a visualization
+```{r inspect-datasets}
+names(Quarterly_Real_GDP_Growth)
+names(World_Bank_Clean_Dataset)
+
+# Remove Non-OECD economies if present
+GDP_Growth <- Quarterly_Real_GDP_Growth %>%
+  filter(`Quarterly real GDP growth - OECD countries` != "Non-OECD economies")
+```
+```{r reshape-data}
+# Convert from wide to long format
+Quarterly_Real_GDP_Growth_long <- Quarterly_Real_GDP_Growth %>%
+  pivot_longer(
+    cols = starts_with("..."),
+    names_to = "Quarter",
+    values_to = "GDP_Growth"
+  ) %>%
+  rename(Country = `Quarterly real GDP growth - OECD countries`)
+
+# Check the reshaped data
+head(Quarterly_Real_GDP_Growth_long)
+```
+
+```{r summary-statistics}
+
+```
+
+```{r visualization}
+
 ```
