@@ -1,13 +1,14 @@
 ---
 title: "Project proposal"
-author: "Team name"
+author: "AJJ"
 output: github_document
 ---
 
 ```{r load-packages, message = FALSE}
 library(tidyverse)
 library(broom)
-## Add any additional packages you are using here
+library(readxl)
+library(dplyr)
 ```
 
 ## 1. Introduction
