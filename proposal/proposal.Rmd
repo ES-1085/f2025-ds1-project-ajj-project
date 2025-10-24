@@ -15,10 +15,11 @@ library(dplyr)
 
 The data used in our group project is sourced from the OECD, specifically from the dataset “Quarterly Real GDP Growth – OECD Countries.” This dataset provides quarterly GDP growth figures for OECD member nations, covering the period from 2018 Q2 to 2025 Q2. The purpose of collecting this data is to examine how nations recovered economically following the devastating impacts of the COVID-19 pandemic, with a particular focus on comparing the varying degrees of recovery across countries. 
 
-Our dataset from the OECD contains 1,523 data points, 31 variables, and 54 observations. We plan to exclude the “Non-OECD economies” observation since it contains no data. To fill this gap, our team is considering incorporating an additional dataset from the World Bank Group, which tracks GDP growth for both OECD and non-OECD countries. This will allow us to develop a more comprehensive and comparative view of national economic performance. 
+Our dataset from the OECD contains 1,523 data points, 31 variables, and 54 observations. We plan to exclude the “Non-OECD economies” observation since it contains no data. To fill this gap, our team is considering incorporating an additional dataset from the World Bank Group, which tracks GDP growth for both OECD and non-OECD countries. This will allow us to develop a more comprehensive and comparative view of national economic performance. We plan to later narrow in on 4 countries: USA, Denmark, South Africa, and India. We will analyze their economic performance and compare it to global post-covid performance. 
+
+Moreover, we plan to add a few additional variables to our dataset by categorizing the levels of economic recovery into performance groups. These categories may include classifications such as stagnating, recovering, and booming. This transformation will allow us to better visualize and compare how different countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
 
 For this project, our research focuses on the varying levels of economic recovery around the world following the COVID-19 pandemic. We aim to closely examine the observations in our dataset to identify potential patterns (such as geographic or regional trends) that reveal which countries recovered quickly and which continued to face significant challenges. 
-
 Some of the questions we hope to explore include: 
 
 * Are there clear geographic patterns indicating which countries were more effective in rebounding economically? 
@@ -36,7 +37,6 @@ Clean_Excel_OECD_Dataset <- read_excel("data/ignore/Clean Excel - OECD Data.xlsx
 World_Bank_Clean_Dataset <- read_csv("data/World Bank - Clean Dataset.csv")
 # View(World_Bank_Clean_Dataset)
 ```
-
 ```{r dimensions}
 dim(Clean_Excel_OECD_Data)
 dim(World_Bank_Clean_Dataset)
@@ -66,27 +66,9 @@ Other additional data we may explore are datasets which will categorize the leve
 
 
 ```{r inspect-datasets}
-names(Quarterly_Real_GDP_Growth)
+names(Clean_Excel_OECD_Data)
 names(World_Bank_Clean_Dataset)
-
-# Remove Non-OECD economies if present
-GDP_Growth <- Quarterly_Real_GDP_Growth %>%
-  filter(`Quarterly real GDP growth - OECD countries` != "Non-OECD economies")
 ```
-```{r reshape-data}
-# Convert from wide to long format
-Quarterly_Real_GDP_Growth_long <- Quarterly_Real_GDP_Growth %>%
-  pivot_longer(
-    cols = starts_with("..."),
-    names_to = "Quarter",
-    values_to = "GDP_Growth"
-  ) %>%
-  rename(Country = `Quarterly real GDP growth - OECD countries`)
-
-# Check the reshaped data
-head(Quarterly_Real_GDP_Growth_long)
-```
-
 ```{r summary-statistics}
 
 ```
