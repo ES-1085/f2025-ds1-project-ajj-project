@@ -9,6 +9,7 @@ library(tidyverse)
 library(broom)
 library(readxl)
 library(dplyr)
+library(ggplot2)
 ```
 
 ## 1. Introduction
@@ -82,8 +83,42 @@ We’ll start by cleaning the dataset by removing unnecessary information and co
 Then we’ll identify countries with the highest/lowest GDP growth past the pandemic. We can do this by using histograms and boxplots to identify outliers in the dataset.
 Lastly, we’ll summarize the dataset. We’ll show who had the strongest recovery post pandemic, and how consistent the patterns were within each region:
 
-```{r summary-statistics}
+```{r clean-column-names}
+names(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)[1] <- "Country"
+names(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)[1] <- "Country"
+```
 
+```{r convert-to-long-format-for-time-series-analysis}
+gdp_growth_long <- GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual %>%
+  pivot_longer(cols = starts_with("20"), names_to = "Year", values_to = "GDP_Growth") %>%
+  filter(!is.na(GDP_Growth)) %>%
+  mutate(Year = as.integer(Year))
+```
+
+```{r summary-statistics}
+summary_stats <- gdp_growth_long %>%
+  group_by(Year) %>%
+  summarize(
+    mean_growth = mean(GDP_Growth, na.rm = TRUE),
+    median_growth = median(GDP_Growth, na.rm = TRUE),
+    sd_growth = sd(GDP_Growth, na.rm = TRUE),
+    min_growth = min(GDP_Growth, na.rm = TRUE),
+    max_growth = max(GDP_Growth, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+print(summary_stats)
+```
+
+```{r identify-countries-post-pandemic (2021-24)}
+post_pandemic_growth <- gdp_growth_long %>%
+  filter(Year >= 2021) %>%
+  group_by(Country) %>%
+  summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
+  arrange(desc(avg_growth_post_pandemic))
+
+head(post_pandemic_growth, 5)   # Top 5 strongest recoveries
+tail(post_pandemic_growth, 5)   # Bottom 5 weakest recoveries
 ```
 
 Planned Data Visualization:
@@ -93,5 +128,27 @@ Planned Data Visualization:
 - Scatter Plot: to represent the recovery time vs. GDP growth
 
 ```{r visualization}
+# line plot: GDP growth over time
+ggplot(gdp_growth_long, aes(x = Year, y = GDP_Growth, group = Country)) +
+  geom_line(alpha = 0.3) +
+  geom_smooth(aes(group = 1), color = "blue", se = FALSE, linewidth = 1.2) +
+  labs(title = "Global GDP Growth Trends (2018–2024)",
+       x = "Year", y = "GDP Growth (%)") +
+  theme_minimal()
 
+# box plot: distribution by year
+ggplot(gdp_growth_long, aes(x = as.factor(Year), y = GDP_Growth)) +
+  geom_boxplot(fill = "lightblue", outlier.color = "red") +
+  labs(title = "Distribution of GDP Growth by Year",
+       x = "Year", y = "GDP Growth (%)") +
+  theme_minimal()
+
+# bar chart: average post-pandemic GDP growth
+ggplot(post_pandemic_growth[1:15, ], aes(x = reorder(Country, avg_growth_post_pandemic),
+                                         y = avg_growth_post_pandemic)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 15 Countries with Strongest Post-Pandemic GDP Growth",
+       x = "Country", y = "Average GDP Growth (2021–2024, %)") +
+  theme_minimal()
 ```
