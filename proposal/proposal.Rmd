@@ -84,7 +84,7 @@ Then we’ll identify countries with the highest/lowest GDP growth past the pand
 Lastly, we’ll summarize the dataset. We’ll show who had the strongest recovery post pandemic, and how consistent the patterns were within each region:
 
 ```{r clean-column-names}
-names(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)[1] <- "Country"
+names(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)[1] <- "Country"
 names(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)[1] <- "Country"
 ```
 
