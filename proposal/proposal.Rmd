@@ -42,12 +42,12 @@ GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD <- read_excel("/cloud/project/data
 ```
 
 ```{r dimensions}
-dim(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
+dim(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)
 dim(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)
 ```
 
 ```{r glimpse}
-glimpse(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
+glimpse(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)
 glimpse(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)
 ```
 
@@ -89,10 +89,28 @@ names(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)[1] <- "Country"
 ```
 
 ```{r convert-to-long-format-for-time-series-analysis}
-gdp_growth_long <- GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual %>%
-  pivot_longer(cols = starts_with("20"), names_to = "Year", values_to = "GDP_Growth") %>%
-  filter(!is.na(GDP_Growth)) %>%
-  mutate(Year = as.integer(Year))
+# make all column names characters  
+names(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD) <-
+  as.character(names(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD))
+
+# convert all "year" columns (2018–2024) to characters before pivoting
+GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD <-
+  GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD %>%
+  mutate(across(matches("^20"), as.character))
+
+# pivot longer using the original "Time Period" column  
+gdp_growth_long <- GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD %>%
+  pivot_longer(
+    cols = matches("^20"),       # selects 2018–2024 columns
+    names_to = "Year",
+    values_to = "GDP_Growth"
+  ) %>%
+  mutate(
+    Year = as.integer(Year),     # turn "2018" → 2018
+    GDP_Growth = as.numeric(GDP_Growth)
+  )
+
+glimpse(gdp_growth_long)
 ```
 
 ```{r summary-statistics}
@@ -113,12 +131,10 @@ print(summary_stats)
 ```{r identify-countries-post-pandemic (2021-24)}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
-  group_by(Country) %>%
+  group_by(`ï..Time.Period`) %>%
   summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
   arrange(desc(avg_growth_post_pandemic))
 
-head(post_pandemic_growth, 5)   # Top 5 strongest recoveries
-tail(post_pandemic_growth, 5)   # Bottom 5 weakest recoveries
 ```
 
 Planned Data Visualization:
@@ -149,6 +165,6 @@ ggplot(post_pandemic_growth[1:15, ], aes(x = reorder(Country, avg_growth_post_pa
   geom_col(fill = "steelblue") +
   coord_flip() +
   labs(title = "Top 15 Countries with Strongest Post-Pandemic GDP Growth",
-       x = "Country", y = "Average GDP Growth (2021–2024, %)") +
+       x = "Country", y = "Average GDP Growth (2021–2024 %)") +
   theme_minimal()
 ```
