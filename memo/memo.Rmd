@@ -1,6 +1,6 @@
 ---
 title: "Project memo"
-author: "Team name"
+author: "AJJ"
 output: github_document
 ---
 
@@ -9,17 +9,47 @@ This document should contain a detailed account of the data clean up for your da
 ```{r load-packages, message = FALSE}
 library(tidyverse)
 library(broom)
+library(gganimate) # for optional animation
+library(scales)
 ```
 
 ## Data Clean Up Steps for Overall Data
 
-### Step 1: _________
+### Step 1: Load and Inspect Dataset
 
 ```{r}
-
+gdp <- read_csv("data/GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual.csv")
+glimpse(gdp)
 ```
 
-### Step 2: ________
+### Step 2: Rename Columns and Pivot Longer
+
+```{r}
+gdp_clean <- gdp |>
+rename(Country = `Time Period`) |>   # rename for clarity
+filter(Country != "Country") |>       # remove header-like cell
+pivot_longer(cols = starts_with("20"),
+names_to = "Year",
+values_to = "GDP_Growth") |>
+mutate(Year = as.integer(Year))
+```
+
+Description:
+The dataset originally had years (2018–2024) as columns, which makes it wide. pivot_longer() converts it into a tidy long format with Year and GDP_Growth columns, making it easier to plot over time.
+
+### Step 3: Categorize Countries by Growth Type
+
+```{r}
+gdp_clean <- gdp_clean |>
+mutate(Growth_Category = case_when(
+GDP_Growth > 4 ~ "Booming",
+GDP_Growth > 0 & GDP_Growth <= 4 ~ "Recovering",
+GDP_Growth <= 0 ~ "Stagnating"
+))
+```
+
+Description:
+Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) are chosen based on typical GDP growth ranges—feel free to adjust.
 
 ## Plots
 
@@ -45,16 +75,27 @@ ggsave("example-starwars.png", width = 4, height = 4)
 ggsave("example-starwars-wide.png", width = 6, height = 4)
 ```
 
-
-
-### Plot 1: _________
+### Plot 1: GDP Growth Trends Over Time by Country
 
 #### Data cleanup steps specific to plot 1
 
-These data cleaning sections are optional and depend on if you have some data cleaning steps specific to a particular plot
+Already handled above (pivot + filter + mutate).
 
 ```{r}
+plot1 <- gdp_clean |>
+ggplot(aes(x = Year, y = GDP_Growth, group = Country, color = Growth_Category)) +
+geom_line(size = 1) +
+geom_point(size = 2) +
+labs(title = "Annual GDP Growth by Country (2018–2024)",
+x = "Year",
+y = "GDP Growth (%)",
+color = "Growth Category",
+caption = "Source: World Bank / IMF GDP data, cleaned and processed by [Your Name].") +
+theme_minimal() +
+theme(legend.position = "bottom")
 
+ggsave("plot1_gdp_growth_trends.png", plot = plot1, width = 7, height = 5)
+plot1
 ```
 
 
@@ -65,9 +106,41 @@ These data cleaning sections are optional and depend on if you have some data cl
 ```
 
 
-### Plot 2: _________
+### Plot 2: Average GDP Growth by Category
 
-### Plot 3: ___________
+```{r}
+plot2 <- gdp_clean |>
+group_by(Growth_Category) |>
+summarize(Avg_GDP_Growth = mean(GDP_Growth, na.rm = TRUE)) |>
+ggplot(aes(x = reorder(Growth_Category, -Avg_GDP_Growth), y = Avg_GDP_Growth, fill = Growth_Category)) +
+geom_col() +
+scale_fill_manual(values = c("Booming" = "#2ECC71", "Recovering" = "#F1C40F", "Stagnating" = "#E74C3C")) +
+labs(title = "Average GDP Growth by Category (2018–2024)",
+x = "Category",
+y = "Average Growth (%)",
+fill = "Growth Type") +
+theme_minimal()
+
+ggsave("plot2_avg_growth_category.png", plot = plot2, width = 6, height = 4)
+plot2
+```
+### Plot 3: GDP Growth Animation (Reach Goal)
+
+```{r}
+animated_plot <- gdp_clean |>
+ggplot(aes(x = Year, y = GDP_Growth, color = Growth_Category, group = Country)) +
+geom_line(size = 1) +
+geom_point(size = 2) +
+labs(title = 'GDP Growth Over Time: {closest_state}', x = "Year", y = "GDP Growth (%)") +
+transition_states(Year, transition_length = 1, state_length = 1) +
+ease_aes('linear') +
+theme_minimal()
+
+anim_save("plot3_gdp_growth_animation.gif", animation = animated_plot)
+```
+
+Description:
+This animation shows each country's GDP growth trajectory year by year, inspired by the Gapminder style. It helps visualize shifts in economic momentum dynamically.
 
 Add more plot sections as needed. Each project should have at least 3 plots, but talk to me if you have fewer than 3.
 
