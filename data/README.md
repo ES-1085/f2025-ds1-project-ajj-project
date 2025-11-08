@@ -2,138 +2,112 @@
 
 Data files placed in this in this folder. 
 
-## Quarterly Real GDP Growth
+This project analyzes global economic recovery patterns from 2018 to 2024, focusing on how different countries rebounded following the COVID-19 pandemic. The primary goal is to evaluate variations in GDP growth and GDP per capita across OECD and non-OECD nations and to visualize how economic resilience differs by income level and region.
 
-**Description:** 
-This table presents Gross Domestic Product (GDP) and its main components according to the expenditure approach from 2018 to 2025.
-Data is expressed as growth rates in percentages. In the expenditure approach, GDP is composed of:
-- Final consumption expenditure of households and non-profit institutions serving households (NPISH)
-- Final consumption expenditure of general government
-- Gross fixed capital formation (investment)
-- Net trade (exports minus imports)
+## GDP Growth (Annual, 2018–2024)
 
-The data is presented for OECD countries individually, as well as the OECD total, G20, G7, OECD Europe, United States - Mexico - Canada Agreement (USMCA), European Union and euro area.
+**Dataset name:** `GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual`  
+**Source:** OECD Quarterly Real GDP Growth – converted to annual averages for cross-national comparison.
 
-- 'Quarterly real GDP growth - OECD countries': Dataset title and descriptive metadata (e.g., frequency, combined transaction).
--  'Time period': Reported period of the dataset
-- 'Reference area': Refers to country or economic group name.
-- 'Frequency of observation: Quarterly': Quarterly measured in each quarter of the year and the reporting period
--- 'Combined transaction': Gross domestic product, Total economy
-- 'Combined unit of measure': Growth rate, period on period, Chain linked volume, Calendar and seasonally adjusted.
-- '...2 – ...33:' Represent time periods and quarterly GDP growth values for different countries and economic groups (e.g., 2018-Q2 through 2025-Q3).
+**Description:**  
+This dataset measures the annual GDP growth rate (%) for 54 countries and economic regions from 2018 through 2024. 
+It was derived from OECD’s original Quarterly Real GDP Growth table, which reports percentage changes in real GDP (seasonally adjusted, chain-linked volumes). Because quarterly data can fluctuate due to short-term shocks, we converted it into annualized averages to emphasize broader macroeconomic recovery patterns.
 
-- The dataset is formatted in a wide structure, with quarterly observations across multiple columns.  
-- Each row corresponds to a country or group entry, and each column beyond the first contains GDP growth rate (%) for a given quarter.
-   
-**Dimensions:**
-Rows: 62 Columns: 33
+Quarterly growth captures volatility (e.g., rapid collapse and rebound in 2020), but for comparing countries with differing seasonal cycles, annual aggregation smooths out noise and allows alignment with the World Bank’s yearly GDP per capita indicators.
+This ensures both datasets share a common temporal frequency (one observation per year) and can be merged for cross-variable analysis.
 
-Glimpse():
+Each row represents one country, and columns correspond to annual GDP growth rates (%).
+Missing values (NA) represent unavailable or incomplete OECD data for certain years or regional aggregates.
 
-$ `Quarterly real GDP growth - OECD countries` <chr> "Frequency of observation: Quarterly", "Combined transaction: Gross domestic pr…
+**Key variables:**
+- `Time period`: Country name  
+- `2018–2024`: Annual GDP growth rate (%) for each year  
 
-$ ...2                                         <chr> NA, NA, NA, NA, "Time period", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+**Dimensions:**  
+Rows: 54 Columns: 8
 
-$ ...3                                         <chr> NA, NA, NA, NA, "2018-Q2", NA, "0.738482668", "0.799131781", "0.506397402", "0.…
+**Glimpse():**
 
-$ ...4                                         <chr> NA, NA, NA, NA, "2018-Q3", NA, "0.361949614", "0.421383118", "0.435062951", "0.…
+$ `Time period` <chr> "Country", "Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia", "Costa Rica", …
 
-$ ...5                                         <chr> NA, NA, NA, NA, "2018-Q4", NA, "0.239797405", "0.946260629", "0.918875904", "0.…
+$ `2018`        <dbl> NA, 2.8349175, 2.4842210, 1.8779685, 2.7429634, 3.9900295, 2.5643243, 2.6159044, 2.8303059,…
 
-$ ...6                                         <chr> NA, NA, NA, NA, "2019-Q1", NA, "0.727818059", "1.124698216", "0.410832523", "0.…
+$ `2019`        <dbl> NA, 1.9154753, 1.7549763, 2.4428900, 1.9084319, 0.6343675, 3.1868554, 2.4175118, 3.5657766,…
 
-$ ...7                                         <chr> NA, NA, NA, NA, "2019-Q2", NA, "0.290252964", "-0.623655576", "0.59316201", "1.…
+$ `2020`        <dbl> NA, -2.01405865, -6.31825516, -4.79296338, -5.03823342, -6.14347479, -7.18591414, -4.273354…
 
-$ ...8                                         <chr> NA, NA, NA, NA, "2019-Q3", NA, "0.560439635", "0.165595857", "0.789076907", "0.…
+$ `2021`        <dbl> NA, 5.444144, 4.923092, 6.254434, 5.950528, 11.314920, 10.801198, 7.935762, 4.029018, 6.500…
 
-$ ...9                                         <chr> NA, NA, NA, NA, "2019-Q4", NA, "0.60488786", "-0.638423035", "0.550532252", "0.…
+$ `2022`        <dbl> NA, 4.1186486, 5.3309726, 3.9562583, 4.5574856, 2.1539936, 7.3282773, 4.5514918, 2.8471707,…
 
-$ ...10                                        <chr> NA, NA, NA, NA, "2020-Q1", NA, "-0.131928563", "-1.117086351", "-2.599795342", …
+$ `2023`        <dbl> NA, 2.02487154, -0.78624418, 1.71412162, 1.75311380, 0.52136798, 0.71238003, 5.11192183, 0.…
 
-$ ...11                                        <chr> NA, NA, NA, NA, "2020-Q2", NA, "-6.751061962", "-12.618656608", "-10.904497643"…
+$ `2024`        <dbl> NA, 1.06699758, -0.65908974, 1.07062666, 0.97378519, 2.64431155, 1.59828185, 4.32122430, 1.…
 
-$ ...12                                        <chr> NA, NA, NA, NA, "2020-Q3", NA, "3.494870901", "11.506879456", "11.48379223", "9…
+**Interpretation:**
 
-$ ...13                                        <chr> NA, NA, NA, NA, "2020-Q4", NA, "3.419455541", "-1.468777133", "-0.456132651", "…
+This dataset is critical for tracking economic contraction and recovery:
+- The 2020 values show a sharp global downturn during the COVID-19 crisis.
+- The 2021–2022 values illustrate a rebound, especially among high-income and export-driven economies.
+- Subsequent years (2023–2024) indicate whether recovery stabilized or slowed.
+- By analyzing this data across OECD and non-OECD members, we can quantify which economies demonstrated resilience, stagnation, or continued volatility.
+  
 
-$ ...14                                        <chr> NA, NA, NA, NA, "2021-Q1", NA, "2.241798166", "-0.982796991", "1.628232265", "1…
+## GDP per Capita (PPP, Annual, 2018–2024)
 
-$ ...15                                        <chr> NA, NA, NA, NA, "2021-Q2", NA, "0.783499775", "4.592282309", "1.531999279", "-0…
+**Dataset name:** `GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD`  
+**Source:** World Bank – World Development Indicators, harmonized with OECD PPP conversion metrics.
 
-$ ...16                                        <chr> NA, NA, NA, NA, "2021-Q3", NA, "-1.695226268", "3.149188771", "1.963111641", "2…
+**Description:**  
+This dataset presents each country’s GDP per capita (in constant 2017 PPP US dollars) from 2018 to 2024. The data were collected from the World Bank’s World Development Indicators (WDI) and cleaned to remove metadata, unify headers, and standardize column formats. 
 
-$ ...17                                        <chr> NA, NA, NA, NA, "2021-Q4", NA, "3.539250751", "0.276471053", "0.923400026", "1.…
+Using Purchasing Power Parity (PPP) ensures fair comparison across economies with different price levels, while expressing values in constant 2017 international dollars removes inflation effects. This lets us distinguish between real income growth and nominal increases due to price changes.
 
-$ ...18                                        <chr> NA, NA, NA, NA, "2022-Q1", NA, "0.982052314", "0.293685826", "0.569557622", "1.…
+Each row represents a country, and each column corresponds to its GDP per capita for a specific year.
+Some columns originally contained character strings (e.g., "65002.659138000003") and were converted to numeric values for analysis.
 
-$ ...19                                        <chr> NA, NA, NA, NA, "2022-Q2", NA, "0.974414642", "2.915486933", "1.102370052", "1.…
+**Key variables:**
+- `Time period...1`: Country name  
+- `Time period...2`: Unit of measurement (“US dollars per person, PPP converted”)  
+- `2018–2024`: Annual GDP per capita (USD PPP)  
 
-$ ...20                                        <chr> NA, NA, NA, NA, "2022-Q3", NA, "0.460483942", "0.023967367", "0.737905185", "0.…
+**Dimensions:**  
+Rows: 47 Columns: 9
 
-$ ...21                                        <chr> NA, NA, NA, NA, "2022-Q4", NA, "0.686695549", "-0.030343097", "0.367181948", "-…
+**Glimpse():**
 
-$ ...22                                        <chr> NA, NA, NA, NA, "2023-Q1", NA, "0.510338649", "-0.120195838", "0.341774395", "1…
+$ `Time period...1` <chr> "Country", "Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia", "Costa Ric…
 
-$ ...23                                        <chr> NA, NA, NA, NA, "2023-Q2", NA, "0.363186915", "-1.21333635", "0.349246987", "0.…
+$ `Time period...2` <chr> "Combined unit of measure", "US dollars per person, PPP converted", "US dollars per per…
 
-$ ...24                                        <chr> NA, NA, NA, NA, "2023-Q3", NA, "0.50049508", "-0.451099062", "0.198029845", "-0…
+$ `2018`            <dbl> NA, 53051.72, 56654.55, 52466.55, 49982.65, 25496.43, 15814.70, 21312.71, 42016.46, 572…
 
-$ ...25                                        <chr> NA, NA, NA, NA, "2023-Q4", NA, "0.124693078", "-0.479724429", "0.338293852", "-…
+$ `2019`            <dbl> NA, 53602.04, 60370.46, 56712.36, 50498.96, 25733.10, 16712.41, 23082.52, 46139.56, 605…
 
-$ ...26                                        <chr> NA, NA, NA, NA, "2024-Q1", NA, "0.15990037", "0.087556284", "0.357026294", "0.1…
+$ `2020`            <dbl> NA, 56821.62, 58522.84, 56119.62, 48590.72, 25236.62, 15950.51, 21778.79, 45675.06, 627…
 
-$ ...27                                        <chr> NA, NA, NA, NA, "2024-Q2", NA, "0.13876843", "-0.172484429", "0.175250461", "0.…
+$ `2021`            <chr> NA, "65002.659138000003", "62998.849713000003", "60668.644834999999", "56995.206995", "…
 
-$ ...28                                        <chr> NA, NA, NA, NA, "2024-Q3", NA, "0.335556581", "-0.019728306", "0.20527964", "0.…
+$ `2022`            <chr> NA, "72576.307081000006", "70865.595503999997", "68157.888133999993", "63578.2977259999…
 
-$ ...29                                        <chr> NA, NA, NA, NA, "2024-Q4", NA, "0.612493087", "0.431261152", "0.142718511", "0.…
+$ `2023`            <chr> NA, "73401.167048000003", "71173.472523999997", "69102.712924000007", "64462.9339439999…
 
-$ ...30                                        <chr> NA, NA, NA, NA, "2025-Q1", NA, "0.257536668", "0.188762792", "0.394966133", "0.…
+$ `2024`            <chr> NA, "73888.300352999999", "73427.587778000001", "72289.394943000007", "65532.718214", "…
 
-$ ...31                                        <chr> NA, NA, NA, NA, "2025-Q2", NA, "0.600990847", "-0.125114409", "0.232968297", "-…
+**Interpretation:**
+This dataset reflects living standards and economic capacity.
 
-$ ...32                                        <chr> NA, NA, NA, NA, "2025-Q3", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+- Increases from 2021 onward suggest countries where individual wealth recovered alongside national GDP.
+- Comparisons between OECD (typically high-income) and non-OECD (developing/emerging) economies reveal persistent inequality in recovery pace and magnitude.
+- Combining this with GDP growth data allows us to test whether wealthier nations also recovered faster or simply maintained higher baselines.
 
-$ ...33                                        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+## Integration and Use:
+The two datasets are merged by Country and Year to enable joint analysis of economic output (growth) and living standards (income per person).
+Together, they support multiple layers of analysis:
 
-## World Bank Dataset
+- Economic recovery trajectories after the COVID-19 pandemic (2019–2024)
+- Cross-regional comparisons between OECD and non-OECD economies
+- Temporal correlations between GDP growth and GDP per capita
+- Regression and visualization of income level vs. growth rate over time
 
-**Description:**
-This dataset contains cleaned macroeconomic indicators compiled from the World Bank, covering multiple years and countries. It includes core economic and demographic indicators such as GDP, population, life expectancy, inflation, and CO₂ emissions, used to compare economic growth patterns across regions.
-
-- 'Data Source': Source of the dataset or indicator (e.g., World Development Indicators) 
-- 'World Development Indicators': Metadata field containing update date or linked source information.
-- '...3': Contains the variable `Indicator Name` (e.g., GDP growth (annual %))
-- '...4 – ...9': Annual GDP growth rate values for years 2019–2024
-- 'Last Updated Date': (appears in header metadata row) Date when data was most recently updated.
-- `Country Name`: Refers to the specific country name the dataset was collected from.
-- `Country Code`: Three-letter ISO country code identifying each country
-- `Indicator Name`: The full descriptive name of the indicator being measured (e.g., GDP growth (annual %)).
-
-Notes:
-- The first few rows contain metadata before the actual data begins (e.g., “Last Updated Date”, “Country Name”, etc.).  
-- Each numeric column (years 2019–2024) contains GDP growth (%) values for each country.  
-- Some missing values occur for 2024 and beyond.
-
-**Dimensions:**
-Rows: 270 Columns: 9
-
-Glimpse():
-
-$ `Data Source`                  <chr> NA, "Last Updated Date", NA, "Country Name", "Aruba", "Africa Eastern and Southern", "Afghani…
-
-$ `World Development Indicators` <chr> NA, "10/7/2025", NA, "Country Code", "ABW", "AFE", "AFG", "AFW", "AGO", "ALB", "AND", "ARB", …
-
-$ ...3                           <chr> NA, NA, NA, "Indicator Name", "GDP growth (annual %)", "GDP growth (annual %)", "GDP growth (…
-
-$ ...4                           <dbl> NA, NA, NA, 2019.0000000, -2.2324420, 2.2003404, 3.9116034, 3.2821630, -0.7022730, 2.0625779,…
-
-$ ...5                           <dbl> NA, NA, NA, 2020.0000000, -26.2118202, -2.8597839, -2.3511007, -0.9841174, -5.6382147, -3.313…
-
-$ ...6                           <dbl> NA, NA, NA, 2021.0000000, 24.1326274, 4.5635681, -20.7388394, 4.0300003, 1.1992105, 8.9695762…
-
-$ ...7                           <dbl> NA, NA, NA, 2022.0000000, 8.5179181, 3.5557688, -6.2401720, 3.9749635, 3.0447265, 4.8266961, …
-
-$ ...8                           <dbl> NA, NA, NA, 2023.0000000, 4.2637194, 1.8913074, 2.2669437, 3.3579870, 1.0780995, 3.9366169, 2…
-
-$ ...9                           <dbl> NA, NA, NA, 2024.000000, NA, 2.766804, NA, 4.176103, 4.423905, 3.961719, 3.371820, 1.548919, …
+These integrated data form the empirical foundation for the project’s exploratory data analysis and visualizations, helping identify which countries experienced the strongest recoveries and how those patterns align with income group and region.
