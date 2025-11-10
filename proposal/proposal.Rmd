@@ -131,7 +131,7 @@ print(summary_stats)
 ```{r identify-countries-post-pandemic (2021-24)}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
-  group_by(`ï..Time.Period`) %>%
+  group_by(`Time period`) %>%
   summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
   arrange(desc(avg_growth_post_pandemic))
 
