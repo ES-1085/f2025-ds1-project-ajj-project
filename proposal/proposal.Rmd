@@ -36,21 +36,21 @@ Some of the questions we hope to explore include:
 ## 2. Data
 
 ```{r load-data}
-GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD <- read_excel("/cloud/project/data/GDP Growth - Filtered Concise Dataset 2018-2024 Annual OECD + Non-OECD.xlsx")
-# View(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)
+Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual GDP Growth OECD and non-OECD.xlsx")
+# View(Annual_GDP_Growth_OECD_and_non_OECD)
 
-GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD <- read_excel("/cloud/project/data/GDP Per Capita - 2018 - 2024 Annual OECD + Non-OECD.xlsx")
-# View(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)
+Annual_GDP_Per_Capita_OECD_and_Non_OECD <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx")
+# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
 ```
 
 ```{r dimensions}
-dim(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)
-dim(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)
+dim(Annual_GDP_Growth_OECD_and_non_OECD)
+dim(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
 ```
 
 ```{r glimpse}
-glimpse(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD)
-glimpse(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)
+glimpse(Annual_GDP_Growth_OECD_and_non_OECD)
+glimpse(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
 ```
 
 ## 3. Data analysis plan
@@ -85,23 +85,22 @@ We’ll start by cleaning the dataset by removing unnecessary information and co
 Then we’ll identify countries with the highest/lowest GDP growth past the pandemic. We can do this by using histograms and boxplots to identify outliers in the dataset.
 Lastly, we’ll summarize the dataset. We’ll show who had the strongest recovery post pandemic, and how consistent the patterns were within each region:
 
-```{r clean-column-names}
-names(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)[1] <- "Country"
-names(GDP_Per_Capita_2018_2024_Annual_OECD_Non_OECD)[1] <- "Country"
+```{r clean-column-names, message=FALSE}
+names(Annual_GDP_Per_Capita_OECD_and_Non_OECD)[1] <- "Time Period"
 ```
 
 ```{r convert-to-long-format-for-time-series-analysis}
 # make all column names characters  
-names(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD) <-
-  as.character(names(GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD))
+names(Annual_GDP_Growth_OECD_and_non_OECD) <-
+  as.character(names(Annual_GDP_Growth_OECD_and_non_OECD))
 
 # convert all "year" columns (2018–2024) to characters before pivoting
-GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD <-
-  GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD %>%
+Annual_GDP_Growth_OECD_and_non_OECD <-
+  Annual_GDP_Growth_OECD_and_non_OECD %>%
   mutate(across(matches("^20"), as.character))
 
 # pivot longer using the original "Time Period" column  
-gdp_growth_long <- GDP_Growth_Filtered_Concise_Dataset_2018_2024_Annual_OECD_Non_OECD %>%
+gdp_growth_long <- Annual_GDP_Growth_OECD_and_non_OECD %>%
   pivot_longer(
     cols = matches("^20"),       # selects 2018–2024 columns
     names_to = "Year",
