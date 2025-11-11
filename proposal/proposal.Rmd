@@ -10,8 +10,6 @@ library(broom)
 library(readxl)
 library(dplyr)
 library(ggplot2)
-library(gganimate)
-library(scales)
 ```
 
 ## 1. Introduction
@@ -36,11 +34,11 @@ Some of the questions we hope to explore include:
 ## 2. Data
 
 ```{r load-data}
-Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual GDP Growth OECD and non-OECD.xlsx")
+Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
 # View(Annual_GDP_Growth_OECD_and_non_OECD)
 
-Annual_GDP_Per_Capita_OECD_and_Non_OECD <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx")
-# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
+Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
+# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
 ```
 
 ```{r dimensions}
