@@ -1,6 +1,6 @@
 Project memo
 ================
-Team name
+AJJ
 
 This document should contain a detailed account of the data clean up for
 your data and the design choices you are making for your plots. For

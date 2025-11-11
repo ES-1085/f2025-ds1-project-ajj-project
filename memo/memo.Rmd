@@ -9,7 +9,7 @@ This document should contain a detailed account of the data clean up for your da
 ```{r load-packages, message = FALSE}
 library(tidyverse)
 library(broom)
-library(gganimate) # for optional animation
+library(gganimate)
 library(scales)
 ```
 
@@ -18,14 +18,17 @@ library(scales)
 ### Step 1: Load and Inspect Dataset
 
 ```{r}
-gdp <- read_csv("data/GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual.csv")
-glimpse(gdp)
+Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
+# View(Annual_GDP_Growth_OECD_and_non_OECD)
+
+Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
+# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
 ```
 
 ### Step 2: Rename Columns and Pivot Longer
 
 ```{r}
-gdp_clean <- gdp |>
+gdp_clean <- Annual_GDP_Growth_OECD_and_non_OECD |>
 rename(Country = `Time Period`) |>   # rename for clarity
 filter(Country != "Country") |>       # remove header-like cell
 pivot_longer(cols = starts_with("20"),
@@ -49,7 +52,8 @@ GDP_Growth <= 0 ~ "Stagnating"
 ```
 
 Description:
-Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) are chosen based on typical GDP growth ranges—feel free to adjust.
+Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) are chosen based on typical GDP growth ranges.
+
 
 ## Plots
 
@@ -124,6 +128,7 @@ theme_minimal()
 ggsave("plot2_avg_growth_category.png", plot = plot2, width = 6, height = 4)
 plot2
 ```
+
 ### Plot 3: GDP Growth Animation (Reach Goal)
 
 ```{r}
