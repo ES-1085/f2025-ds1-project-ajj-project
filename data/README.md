@@ -67,12 +67,12 @@ Each row represents a country, and each column corresponds to its GDP per capita
 Some columns originally contained character strings (e.g., "65002.659138000003") and were converted to numeric values for analysis.
 
 **Key variables:**
-- `Time period...1`: Country name  
+- `Time period': Years of the data measured and collected
 - `Time period...2`: Unit of measurement (“US dollars per person, PPP converted”)  
 - `2018–2024`: Annual GDP per capita (USD PPP)  
 
 **Dimensions:**  
-Rows: 47 Columns: 9
+Rows: 47 Columns: 9
 
 **Glimpse():**
 
