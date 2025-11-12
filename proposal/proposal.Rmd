@@ -33,22 +33,22 @@ Some of the questions we hope to explore include:
 
 ## 2. Data
 
-```{r load-data}
-Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
+```{r load-data, message = FALSE}
+GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
 # View(Annual_GDP_Growth_OECD_and_non_OECD)
 
-Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
+GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
 # View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
 ```
 
-```{r dimensions}
-dim(Annual_GDP_Growth_OECD_and_non_OECD)
-dim(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
+```{r dimensions, message = FALSE}
+dim(GDP_Data)
+dim(GDP_Per_Capita)
 ```
 
-```{r glimpse}
-glimpse(Annual_GDP_Growth_OECD_and_non_OECD)
-glimpse(Annual_GDP_Per_Capita_OECD_and_Non_OECD)
+```{r glimpse, message = FALSE}
+glimpse(GDP_Data)
+glimpse(GDP_Per_Capita)
 ```
 
 ## 3. Data analysis plan
@@ -83,22 +83,22 @@ We’ll start by cleaning the dataset by removing unnecessary information and co
 Then we’ll identify countries with the highest/lowest GDP growth past the pandemic. We can do this by using histograms and boxplots to identify outliers in the dataset.
 Lastly, we’ll summarize the dataset. We’ll show who had the strongest recovery post pandemic, and how consistent the patterns were within each region:
 
-```{r clean-column-names, message=FALSE}
-names(Annual_GDP_Per_Capita_OECD_and_Non_OECD)[1] <- "Time Period"
+```{r clean-column-names, message = FALSE}
+names(GDP_Per_Capita)[1] <- "Country"
 ```
 
-```{r convert-to-long-format-for-time-series-analysis}
+```{r convert-to-long-format-for-time-series-analysis, message = FALSE}
 # make all column names characters  
-names(Annual_GDP_Growth_OECD_and_non_OECD) <-
-  as.character(names(Annual_GDP_Growth_OECD_and_non_OECD))
+names(GDP_Data) <-
+  as.character(names(GDP_Data))
 
 # convert all "year" columns (2018–2024) to characters before pivoting
-Annual_GDP_Growth_OECD_and_non_OECD <-
-  Annual_GDP_Growth_OECD_and_non_OECD %>%
+GDP_Data <-
+  GDP_Data %>%
   mutate(across(matches("^20"), as.character))
 
 # pivot longer using the original "Time Period" column  
-gdp_growth_long <- Annual_GDP_Growth_OECD_and_non_OECD %>%
+gdp_growth_long <- GDP_Data %>%
   pivot_longer(
     cols = matches("^20"),       # selects 2018–2024 columns
     names_to = "Year",
@@ -106,13 +106,22 @@ gdp_growth_long <- Annual_GDP_Growth_OECD_and_non_OECD %>%
   ) %>%
   mutate(
     Year = as.integer(Year),     # turn "2018" → 2018
-    GDP_Growth = as.numeric(GDP_Growth)
-  )
+    GDP_Growth = as.numeric(GDP_Growth),
+    Country = `Time period`
+  ) %>%
+  select(-`Time period`)
+
+gdp_growth_long <- gdp_growth_long %>%
+  filter(Country != "Country")
+
+GDP_Per_Capita <- GDP_Per_Capita %>%
+  filter(str_trim(Country) != "Country") %>%
+  select(-2)
 
 glimpse(gdp_growth_long)
 ```
 
-```{r summary-statistics}
+```{r summary-statistics, message = FALSE}
 summary_stats <- gdp_growth_long %>%
   group_by(Year) %>%
   summarize(
@@ -127,14 +136,21 @@ summary_stats <- gdp_growth_long %>%
 print(summary_stats)
 ```
 
-```{r identify-countries-post-pandemic (2021-24)}
+```{r identify-countries-post-pandemic (2021-24), message = FALSE}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
-  group_by(`Time period`) %>%
+  group_by(`Country`) %>%
   summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
   arrange(desc(avg_growth_post_pandemic))
 
 ```
+
+```{r clean-non-OECD-country-name, message = FALSE}
+gdp_growth_long <- gdp_growth_long %>%
+  mutate(`Country` = str_replace(`Country`, pattern = "·  ", replacement = ""))
+
+```
+
 
 Planned Data Visualization:
 - Line Plots: to represent the time periods 
@@ -142,47 +158,50 @@ Planned Data Visualization:
 - Bar Charts: to compare the average GDP growth by each country
 - Scatter Plot: to represent the recovery time vs. GDP growth
 
-```{r growth-over-time, message=FALSE}
+```{r growth-over-time, message = FALSE}
 # Filter for your four focus countries
 focus_countries <- c("United States", "Denmark", "South Africa", "India")
 
-plot1_gdp_trends <- gdp_growth_long %>%
-  filter(`Time period` %in% focus_countries) %>%
-  ggplot(aes(x = Year, y = GDP_Growth, color = `Time period`, group = `Time period`)) +
+(plot1_gdp_trends <- gdp_growth_long %>%
+  filter(`Country` %in% focus_countries) %>%
+  ggplot(aes(x = Year, y = GDP_Growth, color = `Country`, group = `Country`)) +
   geom_line(size = 1.2) +
   geom_point(size = 2) +
   labs(
     title = "GDP Growth Trends (2018–2024)",
-    subtitle = "Tracking Pre-, During-, and Post-COVID Economic Recovery",
+    subtitle = "Tracking Pre-, During-, and Post-COVID Economic Growth",
     x = "Year",
     y = "GDP Growth (%)",
     color = "Country",
     caption = "Source: OECD Data (Annual Real GDP Growth, 2018–2024)"
   ) +
   theme_minimal(base_size = 13) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") + 
+  scale_color_viridis_d() +
+    ylim(-10, NA) +
+    annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5))
 
 ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
 plot1_gdp_trends
 ```
 
-```{r avg-post-pandemic-growth, message=FALSE}
+```{r avg-post-pandemic-growth, message = FALSE}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
-  group_by(`Time period`) %>%
+  group_by(`Country`) %>%
   summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
   arrange(desc(avg_growth_post_pandemic))
 
 plot2_post_pandemic <- post_pandemic_growth %>%
   slice_max(avg_growth_post_pandemic, n = 15) %>%
-  ggplot(aes(x = reorder(`Time period`, avg_growth_post_pandemic), y = avg_growth_post_pandemic)) +
+  ggplot(aes(x = reorder(`Country`, avg_growth_post_pandemic), y = avg_growth_post_pandemic)) +
   geom_col(fill = "#0072B2") +
   coord_flip() +
   labs(
-    title = "Top 15 Countries by Average GDP Growth (2021–2024)",
+    title = "Top 15 Countries by GDP Growth (2021–2024)",
     subtitle = "Post-COVID Economic Recovery Strength",
     x = "Country",
-    y = "Average GDP Growth (%)",
+    y = "GDP Growth (%)",
   ) +
   theme_minimal(base_size = 13)
 
@@ -190,11 +209,11 @@ ggsave("plot2_post_pandemic.png", plot = plot2_post_pandemic, width = 7, height 
 plot2_post_pandemic
 ```
 
-```{r growth-distribution-by-recovery, message=FALSE}
+```{r growth-distribution-by-recovery, message = FALSE}
 # Step 1: Categorize countries based on post-pandemic average growth
 gdp_growth_long_cat <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
-  group_by(`Time period`) %>%
+  group_by(`Country`) %>%
   mutate(
     avg_growth = mean(GDP_Growth, na.rm = TRUE),
     Recovery_Category = case_when(
@@ -226,7 +245,8 @@ plot3_box <- gdp_growth_long_cat %>%
     "Booming" = "#2ECC71"
   )) +
   theme_minimal(base_size = 13) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
 
 # Step 4: Save and display plot
 ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
