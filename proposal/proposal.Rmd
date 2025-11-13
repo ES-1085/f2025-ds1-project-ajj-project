@@ -253,17 +253,23 @@ ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
 plot3_box
 ```
 
-```{r animated-plot, Message=FALSE}
-# Step 1: Clean up merged data to remove invalid or missing values
-merged_data_clean <- merged_data %>%
-  filter(!is.na(GDP_Per_Capita), GDP_Per_Capita > 0, !is.na(GDP_Growth))
+```{r animated-plot, Message=FALSE, Warning=FALSE}
+# Create merged_data  
+merged_data <- gdp_growth_long %>%
+  left_join(GDP_Per_Capita, by = c("Country", "Year"))
+
+# Clean merged data
+merged_data <- merged_data %>%
+  filter(!is.na(GDP_Per_Capita),
+         GDP_Per_Capita > 0,
+         !is.na(GDP_Growth))
 
 # Step 2: Build the animated plot (unrendered)
-plot4_animation <- merged_data_clean %>%
+plot4_animation <- merged_data %>%
   ggplot(aes(x = GDP_Per_Capita,
              y = GDP_Growth,
-             color = `Time period`,
-             group = `Time period`)) +
+             color = Country,
+             group = Country)) +
   geom_point(size = 3, alpha = 0.8) +
   scale_x_log10(labels = scales::comma) +
   labs(
@@ -284,16 +290,15 @@ plot4_animation <- merged_data_clean %>%
   exit_shrink() +
   ease_aes("sine-in-out")
 
-# Step 3: Render animation FIRST (creates animation object)
+# Step 3: Render animation
 anim <- animate(plot4_animation,
-                fps = 10,       # frames per second
-                duration = 12,  # total duration (seconds)
+                fps = 10,
+                duration = 12,
                 width = 800,
                 height = 600,
-                renderer = gifski_renderer())  # ensures GIF output
+                renderer = gifski_renderer())
 
-# Step 4: Save the rendered animation
-# anim_save("plot4_animation.gif", animation = anim)
+# anim
 ```
 
 

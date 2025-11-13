@@ -211,9 +211,6 @@ cat("\nMerged_data columns:\n")
 print(names(merged_data))
 cat("\nMerged_data rows:", nrow(merged_data), "\n")
 
-# ------------------------------------------------------------------
-# Animation Part
-# ------------------------------------------------------------------
 
 merged_data_clean <- merged_data %>%
   filter(!is.na(GDP_Per_Capita),
