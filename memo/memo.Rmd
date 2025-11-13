@@ -11,6 +11,7 @@ library(tidyverse)
 library(broom)
 library(gganimate)
 library(scales)
+library(readxl)
 ```
 
 ## Data Clean Up Steps for Overall Data
@@ -180,46 +181,69 @@ Description:
 ### Plot 4: GDP Growth Animation (Reach Goal)
 
 ```{r animated-plot, Message=FALSE}
-# Step 1: Clean up merged data to remove invalid or missing values
-merged_data_clean <- merged_data %>%
-  filter(!is.na(GDP_Per_Capita), GDP_Per_Capita > 0, !is.na(GDP_Growth))
+# 1. Check if gdp_growth_long exists
+if (!exists("gdp_growth_long")) {
+  stop("ERROR: gdp_growth_long does not exist. 
+       This means an earlier chunk failed before creation.")
+}
 
-# Step 2: Build the animated plot (unrendered)
+# 2. Check if GDP_Per_Capita exists
+if (!exists("GDP_Per_Capita")) {
+  stop("ERROR: GDP_Per_Capita does not exist.
+       This means the GDP per capita chunk failed.")
+}
+
+# 3. Standardize country names
+gdp_growth_long_fixed <- gdp_growth_long %>%
+  rename(Country = matches("Country|Time period|LOCATION", ignore.case = TRUE)) %>%
+  mutate(Country = trimws(Country))
+
+GDP_Per_Capita_fixed <- GDP_Per_Capita %>%
+  rename(Country = matches("Country|LOCATION|Country Name", ignore.case = TRUE)) %>%
+  mutate(Country = trimws(Country))
+
+# 4. Create merged_data HERE (guaranteed to exist now)
+merged_data <- gdp_growth_long_fixed %>%
+  left_join(GDP_Per_Capita_fixed, by = c("Country", "Year"))
+
+# Debug print
+cat("\nMerged_data columns:\n")
+print(names(merged_data))
+cat("\nMerged_data rows:", nrow(merged_data), "\n")
+
+# ------------------------------------------------------------------
+# Animation Part
+# ------------------------------------------------------------------
+
+merged_data_clean <- merged_data %>%
+  filter(!is.na(GDP_Per_Capita),
+         GDP_Per_Capita > 0,
+         !is.na(GDP_Growth))
+
 plot4_animation <- merged_data_clean %>%
   ggplot(aes(x = GDP_Per_Capita,
              y = GDP_Growth,
-             color = `Time period`,
-             group = `Time period`)) +
+             color = Country,
+             group = Country)) +
   geom_point(size = 3, alpha = 0.8) +
   scale_x_log10(labels = scales::comma) +
   labs(
-    title = "Global Economic Recovery: GDP per Capita vs GDP Growth",
+    title = "Global Economic Recovery",
     subtitle = "Year: {closest_state}",
-    x = "GDP per Capita (log scale, USD)",
-    y = "GDP Growth (%)",
-    caption = "Source: OECD, 2018–2024"
+    x = "GDP per Capita (log scale)",
+    y = "GDP Growth (%)"
   ) +
-  theme_minimal(base_size = 13) +
-  theme(legend.position = "none") +
-  transition_states(
-    Year,
-    transition_length = 2,
-    state_length = 1
-  ) +
+  theme_minimal() +
+  transition_states(Year) +
   enter_fade() +
-  exit_shrink() +
-  ease_aes("sine-in-out")
+  exit_shrink()
 
-# Step 3: Render animation FIRST (creates animation object)
-anim <- animate(plot4_animation,
-                fps = 10,       # frames per second
-                duration = 12,  # total duration (seconds)
-                width = 800,
-                height = 600,
-                renderer = gifski_renderer())  # ensures GIF output
-
-# Step 4: Save the rendered animation
-# anim_save("plot4_animation.gif", animation = anim)
+animate(plot4_animation,
+        fps = 10,
+        duration = 12,
+        width = 800,
+        height = 600,
+        renderer = gifski_renderer())
 ```
 
 Description:
