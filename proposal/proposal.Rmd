@@ -35,10 +35,10 @@ Some of the questions we hope to explore include:
 
 ```{r load-data, message = FALSE}
 GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
-# View(Annual_GDP_Growth_OECD_and_non_OECD)
+ View(GDP_Data)
 
 GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
-# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
+ View(GDP_Per_Capita)
 ```
 
 ```{r dimensions, message = FALSE}
@@ -50,6 +50,11 @@ dim(GDP_Per_Capita)
 glimpse(GDP_Data)
 glimpse(GDP_Per_Capita)
 ```
+```{r}
+names(GDP_Data)
+names(GDP_Per_Capita)
+```
+
 
 ## 3. Data analysis plan
 
@@ -87,7 +92,7 @@ Lastly, we’ll summarize the dataset. We’ll show who had the strongest recove
 names(GDP_Per_Capita)[1] <- "Country"
 ```
 
-```{r convert-to-long-format-for-time-series-analysis, message = FALSE, warning = FALSE}
+```{r convert-to-long-format-for-time-series-analysis, message = FALSE, WARNING = FALSE}
 # make all column names characters  
 names(GDP_Data) <-
   as.character(names(GDP_Data))
@@ -106,7 +111,7 @@ gdp_growth_long <- GDP_Data %>%
   ) %>%
   mutate(
     Year = as.integer(Year),     # turn "2018" → 2018
-    GDP_Growth = as.numeric(GDP_Growth),
+     GDP_Growth = as.numeric(GDP_Growth),
     Country = `Time period`
   ) %>%
   select(-`Time period`)
@@ -254,43 +259,69 @@ plot3_box
 ```
 
 ```{r animated-plot, Message=FALSE, Warning=FALSE}
-# Create merged_data  
-merged_data <- GDP_Data %>%
-  left_join(GDP_Per_Capita, by = c("Country", "Year"))
+# ---- 1. Convert GDP_Data to long format ----
+gdp_growth_long <- GDP_Data %>%
+  pivot_longer(
+    cols = matches("^20"),   # all year columns
+    names_to = "Year",
+    values_to = "GDP_Growth"
+  ) %>%
+  mutate(
+    Year = as.integer(Year),
+    GDP_Growth = as.numeric(GDP_Growth),
+    Country = `Time period`
+  ) %>%
+  select(Country, Year, GDP_Growth)
 
-# Clean merged data
+
+# ---- 2. Convert GDP_Per_Capita to long format ----
+gdp_pc_long <- GDP_Per_Capita %>%
+  pivot_longer(
+    cols = matches("^20"),   # all year columns
+    names_to = "Year",
+    values_to = "GDP_Per_Capita"
+  ) %>%
+  mutate(
+    Year = as.integer(Year),
+    GDP_Per_Capita = as.numeric(GDP_Per_Capita)
+  ) %>%
+  select(Country, Year, GDP_Per_Capita)
+
+
+# ---- 3. MERGE (now both have Country + Year) ----
+merged_data <- gdp_growth_long %>%
+  left_join(gdp_pc_long, by = c("Country", "Year"))
+
+
+# ---- 4. CLEAN ----
 merged_data <- merged_data %>%
-  filter(!is.na(GDP_Per_Capita),
-         GDP_Per_Capita > 0,
-         !is.na(GDP_Growth))
+  filter(!is.na(GDP_Growth),
+         !is.na(GDP_Per_Capita),
+         GDP_Per_Capita > 0)
 
-# Step 2: Build the animated plot (unrendered)
+
+# ---- 5. ANIMATE ----
 plot4_animation <- merged_data %>%
   ggplot(aes(x = GDP_Per_Capita,
              y = GDP_Growth,
              color = Country,
              group = Country)) +
-  geom_point(size = 3, alpha = 0.8) +
+  geom_point(size = 3, alpha = 0.9) +
   scale_x_log10(labels = scales::comma) +
   labs(
-    title = "Global Economic Recovery: GDP per Capita vs GDP Growth",
+    title = "Global Economic Recovery",
     subtitle = "Year: {closest_state}",
-    x = "GDP per Capita (log scale, USD)",
+    x = "GDP per Capita (log scale)",
     y = "GDP Growth (%)",
-    caption = "Source: OECD, 2018–2024"
+    caption = "Source: OECD"
   ) +
-  theme_minimal(base_size = 13) +
+  theme_minimal() +
   theme(legend.position = "none") +
-  transition_states(
-    Year,
-    transition_length = 2,
-    state_length = 1
-  ) +
+  transition_states(Year) +
   enter_fade() +
-  exit_shrink() +
-  ease_aes("sine-in-out")
+  exit_shrink()
 
-# Step 3: Render animation
+
 anim <- animate(plot4_animation,
                 fps = 10,
                 duration = 12,
@@ -298,8 +329,6 @@ anim <- animate(plot4_animation,
                 height = 600,
                 renderer = gifski_renderer())
 
-# anim
+anim
 ```
-
-
 
