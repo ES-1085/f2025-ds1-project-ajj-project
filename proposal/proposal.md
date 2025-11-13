@@ -11,130 +11,90 @@ library(dplyr)
 
 ## 1. Introduction
 
-The data used in our group project is sourced from the OECD,
-specifically from the dataset “Quarterly Real GDP Growth – OECD
-Countries.” This dataset provides quarterly GDP growth figures for OECD
-member nations, covering the period from 2018 Q2 to 2025 Q2. The purpose
-of collecting this data is to examine how nations recovered economically
-following the devastating impacts of the COVID-19 pandemic, with a
-particular focus on comparing the varying degrees of recovery across
-countries.
+The data for our group project is sourced from the OECD, specifically from two datasets: “Annual Real GDP Growth - OECD and Non-OECD Countries” and “Annual GDP and Consumption Per Capita - OECD and Non-OECD Countries.”
+The first dataset provides annual GDP growth figures for OECD member states and selected non-member countries covering the years 2018-2024, while the second dataset reports GDP and consumption per capita over the same period. Together, these datasets allow us to analyze how different nations recovered economically following the severe disruptions of the COVID-19 pandemic. The selected time frame enables us to trace economic trajectories before, during, and after the pandemic, helping us understand both the immediate impact and the long-term recovery patterns.
 
-Our dataset from the OECD contains 1,523 data points, 31 variables, and
-54 observations. We plan to exclude the “Non-OECD economies” observation
-since it contains no data. To fill this gap, our team is considering
-incorporating an additional dataset from the World Bank Group, which
-tracks GDP growth for both OECD and non-OECD countries. This will allow
-us to develop a more comprehensive and comparative view of national
-economic performance. We plan to later narrow in on 4 countries: USA,
-Denmark, South Africa, and India. We will analyze their economic
-performance and compare it to global post-covid performance.
+After data cleaning, our combined dataset contains fewer than 500 data points, with x observations and x variables. We excluded large economic blocs such as the EU or G7 to focus exclusively on national-level performance and to avoid potential data overlap. For our analysis, we will focus on four countries: the United States, Denmark, South Africa, and India. Two of these nations are OECD members, while the other two are not. This is a deliberate choice to highlight contrasts between advanced and emerging economies. 
 
-Moreover, we plan to add a few additional variables to our dataset by
-categorizing the levels of economic recovery into performance groups.
-These categories may include classifications such as stagnating,
-recovering, and booming. This transformation will allow us to better
-visualize and compare how different countries performed during the
-post-Covid recovery period, providing clearer insights into the relative
-strength and pace of their economic rebounds.
+Moreover, we plan to add a few additional variables to our dataset by categorizing the levels of economic recovery into performance groups. These categories may include classifications such as stagnating, recovering, and booming. This transformation will allow us to better visualize and compare how selected countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
 
-For this project, our research focuses on the varying levels of economic
-recovery around the world following the COVID-19 pandemic. We aim to
-closely examine the observations in our dataset to identify potential
-patterns (such as geographic or regional trends) that reveal which
-countries recovered quickly and which continued to face significant
-challenges.
+For this project, our research focuses on the varying levels of economic recovery around the world following the COVID-19 pandemic. We aim to closely examine the observations in our datasets to identify potential patterns (such as geographic or regional trends) that reveal which countries recovered quickly and which continued to face significant challenges. 
+Some of the questions we hope to explore include: 
 
-Some of the questions we hope to explore include:
+* Are there identifiable geographic patterns indicating which countries were more effective in rebounding economically? 
+* How much did the average year-on-year GDP growth rates vary across countries and regions, and were there any notable outliers?
+* What factors might explain why some countries recovered more successfully than others? We plan to compare and analyze selected countries. 
+* How can we meaningfully categorize countries into groups such as stagnating, recovering, and booming, and what does the global distribution of these categories reveal about overall recovery trends?
+* Among our four selected economies, which performed best, and what key drivers contributed to their relative success?
 
-- Are there clear geographic patterns indicating which countries were
-  more effective in rebounding economically?
-- How much did the average year-on-year GDP growth rates vary across
-  countries and continents, and were there any notable outliers?
-- What factors might explain why some countries recovered more
-  successfully than others? We plan to compare and analyze selected
-  countries.
-- How can we categorize countries into groups such as stagnating,
-  recovering, and booming, and what does the global distribution of
-  these categories reveal about overall recovery trends?
 
 ## 2. Data
 
 ``` r
-GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual <- read_excel("/cloud/project/data/GDP Growth - Clean Concise Dataset 2018-2024 Annual.xlsx")
-# View(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
-World_Bank_Clean_Dataset <- read_csv("/cloud/project/data/World Bank - Clean Dataset.csv")
-```
+GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
 
-    ## New names:
-    ## • `` -> `...3`
-    ## • `` -> `...4`
-    ## • `` -> `...5`
-    ## • `` -> `...6`
-    ## • `` -> `...7`
-    ## • `` -> `...8`
-    ## • `` -> `...9`
-
-    ## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-    ## e.g.:
-    ##   dat <- vroom(...)
-    ##   problems(dat)
-
-    ## Rows: 278 Columns: 9
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (3): Data Source, World Development Indicators, ...3
-    ## dbl (6): ...4, ...5, ...6, ...7, ...8, ...9
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-# View(World_Bank_Clean_Dataset)
+GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
 ```
 
 ``` r
-dim(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
-```
+# View(Annual_GDP_Growth_OECD_and_non_OECD)
 
-    ## [1] 54  8
+# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
+```
 
 ``` r
-dim(World_Bank_Clean_Dataset)
+dim(GDP_Data)
 ```
 
-    ## [1] 278   9
+    ## [1] 47  8
 
 ``` r
-glimpse(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
+dim(GDP_Per_Capita)
 ```
 
-    ## Rows: 54
+    ## [1] 47   9
+
+``` r
+glimpse(GDP_Data)
+```
+
+    ## Rows: 47    
     ## Columns: 8
-    ## $ `Time period` <chr> "Country", "Australia", "Austria", "Belgium", "Canada", …
-    ## $ `2018`        <dbl> NA, 2.8349175, 2.4842210, 1.8779685, 2.7429634, 3.990029…
-    ## $ `2019`        <dbl> NA, 1.9154753, 1.7549763, 2.4428900, 1.9084319, 0.634367…
-    ## $ `2020`        <dbl> NA, -2.01405865, -6.31825516, -4.79296338, -5.03823342, …
-    ## $ `2021`        <dbl> NA, 5.444144, 4.923092, 6.254434, 5.950528, 11.314920, 1…
-    ## $ `2022`        <dbl> NA, 4.1186486, 5.3309726, 3.9562583, 4.5574856, 2.153993…
-    ## $ `2023`        <dbl> NA, 2.02487154, -0.78624418, 1.71412162, 1.75311380, 0.5…
-    ## $ `2024`        <dbl> NA, 1.06699758, -0.65908974, 1.07062666, 0.97378519, 2.6…
+    ## $ `Time period` <chr> "Country", "Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia", "Costa Rica", "Czechi…
+    ## $ `2018`        <dbl> NA, 2.8349175, 2.4842210, 1.8779685, 2.7429634, 3.9900295, 2.5643243, 2.6159044, 2.8303059, 1.8600…
+    ## $ `2019`        <dbl> NA, 1.9154753, 1.7549763, 2.4428900, 1.9084319, 0.6343675, 3.1868554, 2.4175118, 3.5657766, 1.7113…
+    ## $ `2020`        <dbl> NA, -2.01405865, -6.31825516, -4.79296338, -5.03823342, -6.14347479, -7.18591414, -4.27335432, -5.…
+    ## $ `2021`        <chr> NA, "5.4441441719999997", "4.923091748", "6.2544339530000004", "5.9505280410000001", "11.314920488…
+    ## $ `2022`        <chr> NA, "4.1186485880000001", "5.3309725969999997", "3.9562582700000002", "4.5574855740000002", "2.153…
+    ## $ `2023`        <chr> NA, "2.0248715439999998", "-0.78624417999999996", "1.7141216210000001", "1.7531137960000001", "0.5…
+    ## $ `2024`        <chr> NA, "1.0669975759999999", "-0.65908973800000004", "1.070626659", "0.97378519100000005", "2.6443115…
+
 
 ``` r
-glimpse(World_Bank_Clean_Dataset)
+glimpse(GDP_Per_Capita)
 ```
 
-    ## Rows: 278
+    ## Rows: 47
     ## Columns: 9
-    ## $ `Data Source`                  <chr> "<<<<<<< HEAD", NA, "Last Updated Date"…
-    ## $ `World Development Indicators` <chr> NA, NA, "10/7/2025", NA, NA, "10/7/25",…
-    ## $ ...3                           <chr> NA, NA, NA, NA, NA, NA, NA, "Indicator …
-    ## $ ...4                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2019.000000…
-    ## $ ...5                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2020.000000…
-    ## $ ...6                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2021.000000…
-    ## $ ...7                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2022.000000…
-    ## $ ...8                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2023.000000…
-    ## $ ...9                           <dbl> NA, NA, NA, NA, NA, NA, NA, 2024.000000…
+    ## $ `Time period` <chr> "Country", "Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia", "Costa Rica", "Czechi…
+    ## $ ...2          <chr> "Combined unit of measure", "US dollars per person, PPP converted", "US dollars per person, PPP co…
+    ## $ `2018`        <dbl> NA, 53051.72, 56654.55, 52466.55, 49982.65, 25496.43, 15814.70, 21312.71, 42016.46, 57231.33, 3720…
+    ## $ `2019`        <dbl> NA, 53602.04, 60370.46, 56712.36, 50498.96, 25733.10, 16712.41, 23082.52, 46139.56, 60568.74, 4065…
+    ## $ `2020`        <dbl> NA, 56821.62, 58522.84, 56119.62, 48590.72, 25236.62, 15950.51, 21778.79, 45675.06, 62700.58, 4069…
+    ## $ `2021`        <chr> NA, "65002.659138000003", "62998.849713000003", "60668.644834999999", "56995.206995", "28761.63259…
+    ## $ `2022`        <chr> NA, "72576.307081000006", "70865.595503999997", "68157.888133999993", "63578.297725999997", "30392…
+    ## $ `2023`        <chr> NA, "73401.167048000003", "71173.472523999997", "69102.712924000007", "64462.933943999997", "32305…
+    ## $ `2024`        <chr> NA, "73888.300352999999", "73427.587778000001", "72289.394943000007", "65532.718214", "34082.53673…
+
+``r
+glimpse(gdp_growth_long)
+```
+
+    ## Rows: 322
+    ## Columns: 3
+    ## $ Year       <int> 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2018, 2019, 2020,…
+    ## $ GDP_Growth <dbl> 2.8349175, 1.9154753, -2.0140586, 5.4441442, 4.1186486, 2.0248715, 1.0669976, 2.4842210, 1.7549763, -…
+    ## $ Country    <chr> "Australia", "Australia", "Australia", "Australia", "Australia", "Australia", "Australia", "Austria",…
 
 ## 3. Data analysis plan
 
@@ -167,18 +127,14 @@ strength and pace of their economic rebounds.
   your question(s).
 
 ``` r
-names(GDP_Growth_Clean_Concise_Dataset_2018_2024_Annual)
+names(GDP_Data)
 ```
 
-    ## [1] "Time period" "2018"        "2019"        "2020"        "2021"       
-    ## [6] "2022"        "2023"        "2024"
+    ## [1] "Time period" "2018"        "2019"        "2020"        "2021"        "2022"        "2023"        "2024"       
 
 ``` r
-names(World_Bank_Clean_Dataset)
+names(GDP_Per_Capita)
 ```
 
-    ## [1] "Data Source"                  "World Development Indicators"
-    ## [3] "...3"                         "...4"                        
-    ## [5] "...5"                         "...6"                        
-    ## [7] "...7"                         "...8"                        
-    ## [9] "...9"
+    ## [1] "Time period" "...2"        "2018"        "2019"        "2020"        "2021"        "2022"        "2023"       
+    ## [9] "2024"       
