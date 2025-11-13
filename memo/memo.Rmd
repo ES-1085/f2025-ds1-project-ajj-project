@@ -18,7 +18,7 @@ library(readxl)
 
 ### Step 1: Load and Inspect Dataset
 
-```{r}
+```{r load-data, message = FALSE}
 GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
 # View(Annual_GDP_Growth_OECD_and_non_OECD)
 
@@ -28,7 +28,7 @@ GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and
 
 ### Step 2: Rename Columns and Pivot Longer
 
-```{r}
+```{r rename-columns-and-pivot, message = FALSE}
 gdp_clean <- GDP_Data |>
 rename(Country = `Time Period`) |>   # rename for clarity
 filter(Country != "Country") |>       # remove header-like cell
@@ -43,7 +43,7 @@ The dataset originally had years (2018–2024) as columns, which makes it wide. 
 
 ### Step 3: Categorize Countries by Growth Type
 
-```{r}
+```{r categorize-by-growth, message = FALSE}
 gdp_clean <- gdp_clean |>
 mutate(Growth_Category = case_when(
 GDP_Growth > 4 ~ "Booming",
@@ -61,7 +61,7 @@ Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) ar
 
 #### Final Plot 1
 
-```{r}
+```{r final-plot, message = FALSE}
 
 ```
 

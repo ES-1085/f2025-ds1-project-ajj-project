@@ -50,7 +50,7 @@ dim(GDP_Per_Capita)
 glimpse(GDP_Data)
 glimpse(GDP_Per_Capita)
 ```
-```{r}
+```{r dataset-names, message = FALSE}
 names(GDP_Data)
 names(GDP_Per_Capita)
 ```
@@ -92,7 +92,7 @@ Lastly, we’ll summarize the dataset. We’ll show who had the strongest recove
 names(GDP_Per_Capita)[1] <- "Country"
 ```
 
-```{r convert-to-long-format-for-time-series-analysis, message = FALSE, WARNING = FALSE}
+```{r convert-to-long-format-for-time-series-analysis, message = FALSE, warning = FALSE}
 # make all column names characters  
 names(GDP_Data) <-
   as.character(names(GDP_Data))
