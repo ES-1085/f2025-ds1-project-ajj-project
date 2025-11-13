@@ -18,17 +18,17 @@ library(scales)
 ### Step 1: Load and Inspect Dataset
 
 ```{r}
-Annual_GDP_Growth_OECD_and_non_OECD <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
+GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
 # View(Annual_GDP_Growth_OECD_and_non_OECD)
 
-Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
+GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
 # View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
 ```
 
 ### Step 2: Rename Columns and Pivot Longer
 
 ```{r}
-gdp_clean <- Annual_GDP_Growth_OECD_and_non_OECD |>
+gdp_clean <- GDP_Data |>
 rename(Country = `Time Period`) |>   # rename for clarity
 filter(Country != "Country") |>       # remove header-like cell
 pivot_longer(cols = starts_with("20"),
