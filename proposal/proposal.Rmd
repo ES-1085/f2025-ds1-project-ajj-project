@@ -35,10 +35,10 @@ Some of the questions we hope to explore include:
 
 ```{r load-data, message = FALSE}
 GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
- View(GDP_Data)
+# View(GDP_Data)
 
 GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
- View(GDP_Per_Capita)
+# View(GDP_Per_Capita)
 ```
 
 ```{r dimensions, message = FALSE}
@@ -259,22 +259,43 @@ plot3_box
 ```
 
 ```{r animated-plot, Message=FALSE, Warning=FALSE}
-# Merged data
+# Fix column names
+names(GDP_Per_Capita) <- as.character(names(GDP_Per_Capita))
+
+# Clean GDP per capita data
+GDP_Per_Capita_clean <- GDP_Per_Capita %>%
+  select(-`...2`) %>%                     # remove useless column
+  rename(Country = `Time period`) %>%     # rename to match gdp_growth_long
+  mutate(across(matches("^20"), as.character)) %>% 
+  pivot_longer(
+    cols = matches("^20"),
+    names_to = "Year",
+    values_to = "GDP_Per_Capita"
+  ) %>%
+  mutate(
+    Year = as.integer(Year),
+    GDP_Per_Capita = as.numeric(GDP_Per_Capita)
+  )
+
+# Create Merged Data
 merged_data <- gdp_growth_long %>%
-  left_join(GDP_Per_Capita, by = c("Country", "Year"))
+  left_join(GDP_Per_Capita_clean, by = c("Country", "Year")) %>%
+  filter(
+    !is.na(GDP_Growth),
+    !is.na(GDP_Per_Capita),
+    GDP_Per_Capita > 0
+  )
 
-# Clean merged data
-merged_data <- merged_data %>%
-  filter(!is.na(GDP_Growth),
-         !is.na(GDP_Per_Capita),
-         GDP_Per_Capita > 0)
+anti_join(gdp_growth_long, GDP_Per_Capita_clean, by = c("Country", "Year"))
 
-# animate
+
 plot4_animation <- merged_data %>%
-  ggplot(aes(x = GDP_Per_Capita,
-             y = GDP_Growth,
-             color = Country,
-             group = Country)) +
+  ggplot(aes(
+    x = GDP_Per_Capita,
+    y = GDP_Growth,
+    color = Country,
+    group = Country
+  )) +
   geom_point(size = 3, alpha = 0.9) +
   scale_x_log10(labels = scales::comma) +
   labs(
@@ -290,12 +311,12 @@ plot4_animation <- merged_data %>%
   enter_fade() +
   exit_shrink()
 
-anim <- animate(plot4_animation,
-                fps = 10,
-                duration = 12,
-                width = 800,
-                height = 600,
-                renderer = gifski_renderer())
-anim
+animate(plot4_animation,
+        fps = 10,
+        duration = 12,
+        width = 800,
+        height = 600,
+        renderer = gifski_renderer())
+
 ```
 
