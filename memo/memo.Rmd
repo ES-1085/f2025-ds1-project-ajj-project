@@ -28,36 +28,67 @@ GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and
 
 ### Step 2: Rename Columns and Pivot Longer
 
-```{r rename-columns-and-pivot, message = FALSE}
-gdp_clean <- GDP_Data |>
-rename(Country = `Time Period`) |>   # rename for clarity
-filter(Country != "Country") |>       # remove header-like cell
-pivot_longer(cols = starts_with("20"),
-names_to = "Year",
-values_to = "GDP_Growth") |>
-mutate(Year = as.integer(Year))
+```{r clean-columns-names, message = FALSE}
+names(GDP_Per_Capita)[1] <- "Country"
+```
+
+```{r convert-to-long-format-for-time-series-analysis, message = FALSE, warning=FALSE}
+# make all column names characters  
+names(GDP_Data) <-
+  as.character(names(GDP_Data))
+
+# convert all "year" columns (2018–2024) to characters before pivoting
+GDP_Data <-
+  GDP_Data %>%
+  mutate(across(matches("^20"), as.character))
+
+# pivot longer using the original "Time Period" column  
+gdp_growth_long <- GDP_Data %>%
+  pivot_longer(
+    cols = matches("^20"),       # selects 2018–2024 columns
+    names_to = "Year",
+    values_to = "GDP_Growth"
+  ) %>%
+  mutate(
+    Year = as.integer(Year),     # turn "2018" → 2018
+     GDP_Growth = as.numeric(GDP_Growth),
+    Country = `Time period`
+  ) %>%
+  select(-`Time period`)
+
+gdp_growth_long <- gdp_growth_long %>%
+  filter(Country != "Country")
+
+GDP_Per_Capita <- GDP_Per_Capita %>%
+  filter(str_trim(Country) != "Country") %>%
+  select(-2)
 ```
 
 Description:
 The dataset originally had years (2018–2024) as columns, which makes it wide. pivot_longer() converts it into a tidy long format with Year and GDP_Growth columns, making it easier to plot over time.
 
-### Step 3: Categorize Countries by Growth Type
+### Step 3: Categorize Countries by Post Pandemic Growth 
 
-```{r categorize-by-growth, message = FALSE}
-gdp_clean <- gdp_clean |>
-mutate(Growth_Category = case_when(
-GDP_Growth > 4 ~ "Booming",
-GDP_Growth > 0 & GDP_Growth <= 4 ~ "Recovering",
-GDP_Growth <= 0 ~ "Stagnating"
-))
+```{r identify-countries-post-pandemic (2021-24), message = FALSE}
+post_pandemic_growth <- gdp_growth_long %>%
+  filter(Year >= 2021) %>%
+  group_by(`Country`) %>%
+  summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
+  arrange(desc(avg_growth_post_pandemic))
 ```
 
 Description:
-Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) are chosen based on typical GDP growth ranges.
+ 
+### Step 4: Clean Non-OECD Countries from Filtered Data
+
+```{r clean-non-OECD-country-name, message = FALSE}
+gdp_growth_long <- gdp_growth_long %>%
+  mutate(`Country` = str_replace(`Country`, pattern = "·  ", replacement = ""))
+
+```
 
 
 ## Plots
-
 
 #### Final Plot 1
 
@@ -180,38 +211,8 @@ Description:
 
 ### Plot 4: GDP Growth Animation (Reach Goal)
 
-```{r animated-plot, Message=FALSE}
-# 1. Check if gdp_growth_long exists
-if (!exists("gdp_growth_long")) {
-  stop("ERROR: gdp_growth_long does not exist. 
-       This means an earlier chunk failed before creation.")
-}
-
-# 2. Check if GDP_Per_Capita exists
-if (!exists("GDP_Per_Capita")) {
-  stop("ERROR: GDP_Per_Capita does not exist.
-       This means the GDP per capita chunk failed.")
-}
-
-# 3. Standardize country names
-gdp_growth_long_fixed <- gdp_growth_long %>%
-  rename(Country = matches("Country|Time period|LOCATION", ignore.case = TRUE)) %>%
-  mutate(Country = trimws(Country))
-
-GDP_Per_Capita_fixed <- GDP_Per_Capita %>%
-  rename(Country = matches("Country|LOCATION|Country Name", ignore.case = TRUE)) %>%
-  mutate(Country = trimws(Country))
-
-# 4. Create merged_data HERE (guaranteed to exist now)
-merged_data <- gdp_growth_long_fixed %>%
-  left_join(GDP_Per_Capita_fixed, by = c("Country", "Year"))
-
-# Debug print
-cat("\nMerged_data columns:\n")
-print(names(merged_data))
-cat("\nMerged_data rows:", nrow(merged_data), "\n")
-
-
+```{r animated-plot, Message=FALSE, warning=FALSE}
+# try using gdp_growth_long here maybe
 merged_data_clean <- merged_data %>%
   filter(!is.na(GDP_Per_Capita),
          GDP_Per_Capita > 0,
