@@ -87,7 +87,7 @@ Lastly, we’ll summarize the dataset. We’ll show who had the strongest recove
 names(GDP_Per_Capita)[1] <- "Country"
 ```
 
-```{r convert-to-long-format-for-time-series-analysis, message = FALSE, warning = FALSE}
+```{r convert-to-long-format-for-time-series-analysis, message = FALSE}
 # make all column names characters  
 names(GDP_Data) <-
   as.character(names(GDP_Data))

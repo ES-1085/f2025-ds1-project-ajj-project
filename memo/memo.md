@@ -12,13 +12,48 @@ the data cleaning steps and graphics in your handout.
 ``` r
 library(tidyverse)
 library(broom)
+library(gganimate)
+library(scales)
 ```
 
 ## Data Clean Up Steps for Overall Data
 
-### Step 1: \_\_\_\_\_\_\_\_\_
+### Step 1: Load and Inspect Dataset
 
-### Step 2: \_\_\_\_\_\_\_\_
+```{r}
+GDP_Data <- read_excel("/cloud/project/data/Annual_GDP_Growth_OECD_and_non_OECD.xlsx")
+# View(Annual_GDP_Growth_OECD_and_non_OECD)
+
+GDP_Per_Capita <- read_excel("/cloud/project/data/Annual GDP Per Capita OECD and Non-OECD.xlsx.xlsx")
+# View(Annual_GDP_Per_Capita_OECD_and_Non_OECD_xlsx)
+```
+
+### Step 2: Rename Columns and Pivot Longer
+
+```{r}
+gdp_clean <- GDP_Data |>
+rename(Country = `Time Period`) |>   # rename for clarity
+filter(Country != "Country") |>       # remove header-like cell
+pivot_longer(cols = starts_with("20"),
+names_to = "Year",
+values_to = "GDP_Growth") |>
+mutate(Year = as.integer(Year))
+```
+
+Description:
+The dataset originally had years (2018–2024) as columns, which makes it wide. pivot_longer() converts it into a tidy long format with Year and GDP_Growth columns, making it easier to plot over time.
+
+### Step 3: Categorize Countries by Growth Type
+
+```{r}
+gdp_clean <- gdp_clean |>
+mutate(Growth_Category = case_when(
+GDP_Growth > 4 ~ "Booming",
+GDP_Growth > 0 & GDP_Growth <= 4 ~ "Recovering",
+GDP_Growth <= 0 ~ "Stagnating"
+))
+```
+
 
 ## Plots
 

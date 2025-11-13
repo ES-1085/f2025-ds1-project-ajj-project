@@ -57,29 +57,6 @@ Categorizing helps color/facet plots meaningfully. The thresholds (4% and 0%) ar
 
 ## Plots
 
-### Plot 1: GDP Growth Trends Over Time by Country
-
-#### Data cleanup steps specific to plot 1
-
-Already handled above (pivot + filter + mutate).
-
-```{r}
-plot1 <- gdp_clean |>
-ggplot(aes(x = Year, y = GDP_Growth, group = Country, color = Growth_Category)) +
-geom_line(size = 1) +
-geom_point(size = 2) +
-labs(title = "Annual GDP Growth by Country (2018–2024)",
-x = "Year",
-y = "GDP Growth (%)",
-color = "Growth Category",
-caption = "Source: World Bank / IMF GDP data, cleaned and processed by [Your Name].") +
-theme_minimal() +
-theme(legend.position = "bottom")
-
-ggsave("plot1_gdp_growth_trends.png", plot = plot1, width = 7, height = 5)
-plot1
-```
-
 
 #### Final Plot 1
 
@@ -88,44 +65,163 @@ plot1
 ```
 
 
-### Plot 2: Average GDP Growth by Category
+### Plot 1: GDP Growth Trends Over Time by Country
 
-```{r}
-plot2 <- gdp_clean |>
-group_by(Growth_Category) |>
-summarize(Avg_GDP_Growth = mean(GDP_Growth, na.rm = TRUE)) |>
-ggplot(aes(x = reorder(Growth_Category, -Avg_GDP_Growth), y = Avg_GDP_Growth, fill = Growth_Category)) +
-geom_col() +
-scale_fill_manual(values = c("Booming" = "#2ECC71", "Recovering" = "#F1C40F", "Stagnating" = "#E74C3C")) +
-labs(title = "Average GDP Growth by Category (2018–2024)",
-x = "Category",
-y = "Average Growth (%)",
-fill = "Growth Type") +
-theme_minimal()
+#### Data cleanup steps specific to plot 1
 
-ggsave("plot2_avg_growth_category.png", plot = plot2, width = 6, height = 4)
-plot2
+Already handled above (pivot + filter + mutate).
+
+```{r growth-over-time, message = FALSE}
+# Filter for your four focus countries
+focus_countries <- c("United States", "Denmark", "South Africa", "India")
+
+(plot1_gdp_trends <- gdp_growth_long %>%
+  filter(`Country` %in% focus_countries) %>%
+  ggplot(aes(x = Year, y = GDP_Growth, color = `Country`, group = `Country`)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "GDP Growth Trends (2018–2024)",
+    subtitle = "Tracking Pre-, During-, and Post-COVID Economic Growth",
+    x = "Year",
+    y = "GDP Growth (%)",
+    color = "Country",
+    caption = "Source: OECD Data (Annual Real GDP Growth, 2018–2024)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "bottom") + 
+  scale_color_viridis_d() +
+    ylim(-10, NA) +
+    annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5))
+
+ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
+plot1_gdp_trends
 ```
 
-### Plot 3: GDP Growth Animation (Reach Goal)
+Description:
 
-```{r}
-animated_plot <- gdp_clean |>
-ggplot(aes(x = Year, y = GDP_Growth, color = Growth_Category, group = Country)) +
-geom_line(size = 1) +
-geom_point(size = 2) +
-labs(title = 'GDP Growth Over Time: {closest_state}', x = "Year", y = "GDP Growth (%)") +
-transition_states(Year, transition_length = 1, state_length = 1) +
-ease_aes('linear') +
-theme_minimal()
+### Plot 2: Average GDP Growth by Category
 
-anim_save("plot3_gdp_growth_animation.gif", animation = animated_plot)
+```{r avg-post-pandemic-growth, message = FALSE}
+post_pandemic_growth <- gdp_growth_long %>%
+  filter(Year >= 2021) %>%
+  group_by(`Country`) %>%
+  summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
+  arrange(desc(avg_growth_post_pandemic))
+
+plot2_post_pandemic <- post_pandemic_growth %>%
+  slice_max(avg_growth_post_pandemic, n = 15) %>%
+  ggplot(aes(x = reorder(`Country`, avg_growth_post_pandemic), y = avg_growth_post_pandemic)) +
+  geom_col(fill = "#0072B2") +
+  coord_flip() +
+  labs(
+    title = "Top 15 Countries by GDP Growth (2021–2024)",
+    subtitle = "Post-COVID Economic Recovery Strength",
+    x = "Country",
+    y = "GDP Growth (%)",
+  ) +
+  theme_minimal(base_size = 13)
+
+ggsave("plot2_post_pandemic.png", plot = plot2_post_pandemic, width = 7, height = 5)
+plot2_post_pandemic
+```
+
+Description:
+
+
+### Plot 3: GDP Growth Distribution by Recovery Category (2021-2024)
+
+```{r growth-distribution-by-recovery, message = FALSE}
+# Step 1: Categorize countries based on post-pandemic average growth
+gdp_growth_long_cat <- gdp_growth_long %>%
+  filter(Year >= 2021) %>%
+  group_by(`Country`) %>%
+  mutate(
+    avg_growth = mean(GDP_Growth, na.rm = TRUE),
+    Recovery_Category = case_when(
+      avg_growth <= 0 ~ "Stagnating",
+      avg_growth > 0 & avg_growth <= 3 ~ "Recovering",
+      avg_growth > 3 ~ "Booming",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  ungroup()
+
+# Step 2: Remove any rows with NA in Recovery_Category
+gdp_growth_long_cat <- gdp_growth_long_cat %>%
+  filter(!is.na(Recovery_Category))
+
+# Step 3: Create box plot
+plot3_box <- gdp_growth_long_cat %>%
+  ggplot(aes(x = Recovery_Category, y = GDP_Growth, fill = Recovery_Category)) +
+  geom_boxplot(alpha = 0.8, outlier.color = "gray30") +
+  labs(
+    title = "GDP Growth Distribution by Recovery Category (2021–2024)",
+    subtitle = "Excluding countries with missing or incomplete GDP growth data",
+    x = "Recovery Category",
+    y = "GDP Growth (%)",
+    ) +
+  scale_fill_manual(values = c(
+    "Stagnating" = "#E74C3C",
+    "Recovering" = "#F1C40F",
+    "Booming" = "#2ECC71"
+  )) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+# Step 4: Save and display plot
+ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
+plot3_box
+```
+
+Description:
+
+### Plot 4: GDP Growth Animation (Reach Goal)
+
+```{r animated-plot, Message=FALSE}
+# Step 1: Clean up merged data to remove invalid or missing values
+merged_data_clean <- merged_data %>%
+  filter(!is.na(GDP_Per_Capita), GDP_Per_Capita > 0, !is.na(GDP_Growth))
+
+# Step 2: Build the animated plot (unrendered)
+plot4_animation <- merged_data_clean %>%
+  ggplot(aes(x = GDP_Per_Capita,
+             y = GDP_Growth,
+             color = `Time period`,
+             group = `Time period`)) +
+  geom_point(size = 3, alpha = 0.8) +
+  scale_x_log10(labels = scales::comma) +
+  labs(
+    title = "Global Economic Recovery: GDP per Capita vs GDP Growth",
+    subtitle = "Year: {closest_state}",
+    x = "GDP per Capita (log scale, USD)",
+    y = "GDP Growth (%)",
+    caption = "Source: OECD, 2018–2024"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none") +
+  transition_states(
+    Year,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ease_aes("sine-in-out")
+
+# Step 3: Render animation FIRST (creates animation object)
+anim <- animate(plot4_animation,
+                fps = 10,       # frames per second
+                duration = 12,  # total duration (seconds)
+                width = 800,
+                height = 600,
+                renderer = gifski_renderer())  # ensures GIF output
+
+# Step 4: Save the rendered animation
+# anim_save("plot4_animation.gif", animation = anim)
 ```
 
 Description:
 This animation shows each country's GDP growth trajectory year by year, inspired by the Gapminder style. It helps visualize shifts in economic momentum dynamically.
-
-Add more plot sections as needed. Each project should have at least 3 plots, but talk to me if you have fewer than 3.
-
-### Plot 4: ___________ 
 
