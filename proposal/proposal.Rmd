@@ -255,7 +255,7 @@ plot3_box
 
 ```{r animated-plot, Message=FALSE, Warning=FALSE}
 # Create merged_data  
-merged_data <- gdp_growth_long %>%
+merged_data <- GDP_Data %>%
   left_join(GDP_Per_Capita, by = c("Country", "Year"))
 
 # Clean merged data
