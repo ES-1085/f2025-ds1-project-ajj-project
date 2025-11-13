@@ -259,48 +259,17 @@ plot3_box
 ```
 
 ```{r animated-plot, Message=FALSE, Warning=FALSE}
-# ---- 1. Convert GDP_Data to long format ----
-gdp_growth_long <- GDP_Data %>%
-  pivot_longer(
-    cols = matches("^20"),   # all year columns
-    names_to = "Year",
-    values_to = "GDP_Growth"
-  ) %>%
-  mutate(
-    Year = as.integer(Year),
-    GDP_Growth = as.numeric(GDP_Growth),
-    Country = `Time period`
-  ) %>%
-  select(Country, Year, GDP_Growth)
-
-
-# ---- 2. Convert GDP_Per_Capita to long format ----
-gdp_pc_long <- GDP_Per_Capita %>%
-  pivot_longer(
-    cols = matches("^20"),   # all year columns
-    names_to = "Year",
-    values_to = "GDP_Per_Capita"
-  ) %>%
-  mutate(
-    Year = as.integer(Year),
-    GDP_Per_Capita = as.numeric(GDP_Per_Capita)
-  ) %>%
-  select(Country, Year, GDP_Per_Capita)
-
-
-# ---- 3. MERGE (now both have Country + Year) ----
+# Merged data
 merged_data <- gdp_growth_long %>%
-  left_join(gdp_pc_long, by = c("Country", "Year"))
+  left_join(GDP_Per_Capita, by = c("Country", "Year"))
 
-
-# ---- 4. CLEAN ----
+# Clean merged data
 merged_data <- merged_data %>%
   filter(!is.na(GDP_Growth),
          !is.na(GDP_Per_Capita),
          GDP_Per_Capita > 0)
 
-
-# ---- 5. ANIMATE ----
+# animate
 plot4_animation <- merged_data %>%
   ggplot(aes(x = GDP_Per_Capita,
              y = GDP_Growth,
@@ -321,14 +290,12 @@ plot4_animation <- merged_data %>%
   enter_fade() +
   exit_shrink()
 
-
 anim <- animate(plot4_animation,
                 fps = 10,
                 duration = 12,
                 width = 800,
                 height = 600,
                 renderer = gifski_renderer())
-
 anim
 ```
 
