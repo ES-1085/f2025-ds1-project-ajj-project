@@ -327,7 +327,6 @@ animate(plot4_animation,
 ```
 
 
-
 Description:
 This animation shows each country's GDP growth trajectory year by year, inspired by the Gapminder style. It helps visualize shifts in economic momentum dynamically.
 
