@@ -275,7 +275,7 @@ GDP_Per_Capita_clean <- GDP_Per_Capita %>%
   mutate(
     Year = as.integer(Year),
     GDP_Per_Capita = as.numeric(GDP_Per_Capita)
-  )
+  ) 
 
 # Create Merged Data
 merged_data <- gdp_growth_long %>%
