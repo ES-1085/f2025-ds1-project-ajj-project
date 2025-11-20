@@ -260,39 +260,97 @@ plot3_box
 ```
 
 ```{r plot4-gganimate, warning=FALSE}
-plot4_clean <- merged_data %>%
-  ggplot(aes(
-    x = GDP_Per_Capita,
-    y = GDP_Growth,
-    color = Region,   # Only color → very clear
-    group = Country
-  )) +
-  geom_point(size = 2.8, alpha = 0.85) +
-  scale_x_log10(labels = scales::comma) +
+region_map <- tibble(
+  Country = unique(GDP_Data$`Time period`),
+  Region = case_when(
+    Country %in% c("United States", "Canada", "Mexico") ~ "North America",
+    Country %in% c("Denmark", "France", "Germany", "United Kingdom", "Italy", "Spain") ~ "Europe",
+    Country %in% c("Türkiye") ~ "Middle East",
+    Country %in% c("South Africa") ~ "Africa",
+    TRUE ~ "Other"
+  )
+)
+
+gdp_region <- GDP_Data %>%
+  pivot_longer(cols = matches("^20"), names_to="Year", values_to="GDP_Growth") %>%
+  mutate(
+    Year = as.integer(Year),
+    GDP_Growth = as.numeric(GDP_Growth),
+    Country = `Time period`
+  ) %>%
+  left_join(region_map, by="Country")
+
+focus_countries <- c("United States", "Denmark", "Türkiye", "South Africa")
+
+focus_colors <- c(
+  "United States" = "#1f77b4",
+  "Denmark" = "#2ca02c",
+  "Türkiye" = "#d62728",
+  "South Africa" = "#9467bd"
+)
+
+plot_region_covid <- gdp_region %>%
+  ggplot(aes(x = Year, y = GDP_Growth, group = Country)) +
+
+  # COVID shading bar (2020)
+  annotate("rect", xmin = 2020 - 0.5, xmax = 2020 + 0.5,
+           ymin = -Inf, ymax = Inf, fill = "red", alpha = 0.12) +
+  
+  # Grey background countries
+  geom_line(
+    data = gdp_region %>% filter(!Country %in% focus_countries),
+    aes(color = Region),
+    alpha = 0.3,
+    linewidth = 0.8
+  ) +
+  
+  # Highlighted countries
+  geom_line(
+    data = gdp_region %>% filter(Country %in% focus_countries),
+    aes(color = Country),
+    linewidth = 1.4
+  ) +
+  geom_point(
+    data = gdp_region %>% filter(Country %in% focus_countries),
+    aes(color = Country),
+    size = 2
+  ) +
+  geom_text_repel(
+    data = gdp_region %>% filter(Country %in% focus_countries),
+    aes(label = Country, color = Country),
+    size = 4,
+    show.legend = FALSE
+  ) +
+  
+  scale_color_manual(values = c(focus_colors,
+                                "Europe" = "darkblue",
+                                "North America" = "darkgreen",
+                                "Africa" = "orange",
+                                "Middle East" = "purple",
+                                "Other" = "grey50")) +
+
   labs(
-    title = "Global Economic Recovery After COVID-19",
-    subtitle = "Year: {closest_state}",
-    x = "GDP per Capita (log scale)",
+    title = "GDP Growth with Regional Filtering & COVID Highlight",
+    subtitle = "COVID year (2020) shaded in red | Highlighted Countries Emphasized",
+    x = "Year",
     y = "GDP Growth (%)",
-    color = "Group",
-    caption = "Source: OECD"
+    color = "Region / Country"
   ) +
+  
   theme_minimal(base_size = 14) +
-  theme(
-    legend.position = "bottom",
-    plot.title = element_text(face = "bold")
-  ) +
-  transition_states(Year, transition_length = 0.5, state_length = 0.7) +
-  enter_fade() +
-  exit_fade()
+  theme(legend.position = "bottom") +
+
+  transition_reveal(Year)
 
 animate(
-  plot4_clean,
-  fps = 10,
-  duration = 9,
-  width = 750,
-  height = 500,
-  renderer = gifski_renderer()
+  plot_region_covid,
+  fps = 12,
+  duration = 8,
+  renderer = gifski_renderer(),
+  width = 900,
+  height = 550
 )
+
 ```
+
 

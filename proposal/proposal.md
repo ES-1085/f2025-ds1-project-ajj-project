@@ -8,6 +8,15 @@ library(broom)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(ggrepel)
+library(gganimate)  
+library(scales)  
+```
+
+``` r
+# install.packages("gganimate")
+# install.packages("gifski")
+# install.packages("png")
 ```
 
 ## 1. Introduction
@@ -306,12 +315,6 @@ focus_countries <- c("United States", "Denmark", "South Africa", "India")
     annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5))
 ```
 
-    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-    ## ℹ Please use `linewidth` instead.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
 ![](proposal_files/figure-gfm/growth-over-time-1.png)<!-- -->
 
 ``` r
@@ -392,3 +395,116 @@ plot3_box
 ```
 
 ![](proposal_files/figure-gfm/growth-distribution-by-recovery-1.png)<!-- -->
+
+``` r
+# error in knitting --> FIX
+
+# Region classification (simple)
+region_map <- tibble(
+  Country = unique(GDP_Data$`Time period`),
+  Region = case_when(
+    Country %in% c("United States", "Canada", "Mexico") ~ "North America",
+    Country %in% c("Denmark", "France", "Germany", "United Kingdom", "Italy", "Spain",
+                   "Norway","Sweden","Finland","Netherlands","Belgium","Switzerland") ~ "Europe",
+    Country %in% c("Türkiye") ~ "Middle East",
+    Country %in% c("South Africa") ~ "Africa",
+    TRUE ~ "Other"
+  )
+)
+
+gdp_region <- GDP_Data %>%
+  pivot_longer(
+    cols = matches("^20"),
+    names_to = "Year",
+    values_to = "GDP_Growth"
+  ) %>%
+  mutate(
+    Country = `Time period`,
+    Year = as.integer(Year),
+    GDP_Growth = as.numeric(GDP_Growth)
+  ) %>%
+  select(-`Time period`) %>%
+  left_join(region_map, by="Country")
+
+
+focus_countries <- c("United States", "Denmark", "Türkiye", "South Africa")
+gdp_region <- gdp_region %>%
+  mutate(Highlight = ifelse(Country %in% focus_countries, "Focus", "Other"))
+
+focus_colors <- c(
+  "United States" = "#0072B2",
+  "Denmark"       = "#009E73",
+  "Türkiye"        = "#D55E00",
+  "South Africa"  = "#CC79A7"
+)
+
+plot_region_covid <- gdp_region %>%
+  ggplot(aes(x = Year, y = GDP_Growth, group = Country)) +
+
+  # COVID shading
+  annotate("rect",
+           xmin = 2019.5, xmax = 2020.5,
+           ymin = -Inf, ymax = Inf,
+           fill = "red", alpha = 0.1) +
+
+  # Other countries
+  geom_line(
+    data = gdp_region %>% filter(Highlight == "Other"),
+    aes(color = Region),
+    alpha = 0.3,
+    linewidth = 0.7
+  ) +
+
+  # Highlighted countries
+  geom_line(
+    data = gdp_region %>% filter(Highlight == "Focus"),
+    aes(color = Country),
+    linewidth = 2
+  ) +
+
+  geom_point(
+    data = gdp_region %>% filter(Highlight == "Focus"),
+    aes(color = Country),
+    size = 2.5
+  ) +
+
+  geom_text_repel(
+    data = gdp_region %>% filter(Highlight == "Focus"),
+    aes(label = Country, color = Country),
+    size = 5,
+    show.legend = FALSE
+  ) +
+
+  scale_color_manual(
+    values = c(
+      "North America"="darkgreen",
+      "Europe"="darkblue",
+      "Africa"="orange",
+      "Middle East"="purple",
+      "Other"="grey70",
+      focus_colors
+    )
+  ) +
+
+  labs(
+    title = "GDP Growth by Region (2018–2024)",
+    subtitle = "COVID-19 recession in 2020 is highlighted\nYear: {frame_along}",
+    x = "Year",
+    y = "GDP Growth (%)",
+    color = "Region / Highlighted Countries"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(legend.position = "bottom") +
+  transition_reveal(Year)
+
+animate(
+  plot_region_covid,
+  fps = 9,
+  duration = 10,
+  width = 750,
+  height = 500,
+  renderer = gifski_renderer()
+)
+
+unique(GDP_Data$`Time period`)
+```
