@@ -334,8 +334,11 @@ animate(
 unique(GDP_Data$`Time period`)
 ```
 
-\`\`\`
+Description:
 
-Description: This animation shows each country’s GDP growth trajectory
-year by year, inspired by the Gapminder style. It helps visualize shifts
-in economic momentum dynamically.
+This plot shows annual GDP growth from 2018 to 2024 for all countries in
+the dataset, grouped by region and animated over time. The shaded red
+bar marks the 2020 COVID-19 recession, which produces a sharp downturn
+across regions. Four countries (the United States, Denmark, Türkiye, and
+South Africa) are highlighted to show how recovery patterns differed
+across North America, Europe, the Middle East, and Africa.
