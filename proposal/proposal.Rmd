@@ -10,6 +10,7 @@ library(broom)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(ggrepel)
 ```
 
 ## 1. Introduction
@@ -258,65 +259,40 @@ ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
 plot3_box
 ```
 
-```{r animated-plot, Message=FALSE, Warning=FALSE}
-# Fix column names
-names(GDP_Per_Capita) <- as.character(names(GDP_Per_Capita))
-
-# Clean GDP per capita data
-GDP_Per_Capita_clean <- GDP_Per_Capita %>%
-  select(-`...2`) %>%                     # remove useless column
-  rename(Country = `Time period`) %>%     # rename to match gdp_growth_long
-  mutate(across(matches("^20"), as.character)) %>% 
-  pivot_longer(
-    cols = matches("^20"),
-    names_to = "Year",
-    values_to = "GDP_Per_Capita"
-  ) %>%
-  mutate(
-    Year = as.integer(Year),
-    GDP_Per_Capita = as.numeric(GDP_Per_Capita)
-  ) 
-
-# Create Merged Data
-merged_data <- gdp_growth_long %>%
-  left_join(GDP_Per_Capita_clean, by = c("Country", "Year")) %>%
-  filter(
-    !is.na(GDP_Growth),
-    !is.na(GDP_Per_Capita),
-    GDP_Per_Capita > 0
-  )
-
-anti_join(gdp_growth_long, GDP_Per_Capita_clean, by = c("Country", "Year"))
-
-
-plot4_animation <- merged_data %>%
+```{r plot4-gganimate, warning=FALSE}
+plot4_clean <- merged_data %>%
   ggplot(aes(
     x = GDP_Per_Capita,
     y = GDP_Growth,
-    color = Country,
+    color = Region,   # Only color → very clear
     group = Country
   )) +
-  geom_point(size = 3, alpha = 0.9) +
+  geom_point(size = 2.8, alpha = 0.85) +
   scale_x_log10(labels = scales::comma) +
   labs(
-    title = "Global Economic Recovery",
+    title = "Global Economic Recovery After COVID-19",
     subtitle = "Year: {closest_state}",
     x = "GDP per Capita (log scale)",
     y = "GDP Growth (%)",
+    color = "Group",
     caption = "Source: OECD"
   ) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  transition_states(Year) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold")
+  ) +
+  transition_states(Year, transition_length = 0.5, state_length = 0.7) +
   enter_fade() +
-  exit_shrink()
+  exit_fade()
 
-animate(plot4_animation,
-        fps = 10,
-        duration = 12,
-        width = 800,
-        height = 600,
-        renderer = gifski_renderer())
-
+animate(
+  plot4_clean,
+  fps = 10,
+  duration = 9,
+  width = 750,
+  height = 500,
+  renderer = gifski_renderer()
+)
 ```
 

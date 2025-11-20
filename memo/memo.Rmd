@@ -211,119 +211,43 @@ Description:
 
 ### Plot 4: GDP Growth Animation  
 
-```{r create-and-merge-datasets, message=FALSE}
-countries <- c("United States", "Türkiye", "South Africa", "Denmark")
-years <- 2021:2024
+```{r plot4-gganimate, warning=FALSE}
 
-# 1. Simulate the result of your gdp_growth_long creation
-gdp_growth_long <- expand.grid(Country = countries, Year = years) %>%
-  as_tibble() %>%
-  mutate(
-    # Assigning plausible, varied growth rates for demonstration
-    GDP_Growth = case_when(
-      # USA: Steady, moderate growth
-      Country == "United States" ~ runif(n(), min = 1.5, max = 3.5) + (Year - 2021) * 0.1,
-      # Denmark: Moderate, slightly lower growth
-      Country == "Denmark" ~ runif(n(), min = 1.0, max = 3.0) + (Year - 2021) * 0.1,
-      # Turkey: Volatile growth (high spike then stabilization/decline)
-      Country == "Türkiye" ~ if_else(Year == 2022, runif(n(), 5, 8), runif(n(), -2, 4)) + (Year - 2021) * -0.5,
-      # South Africa: Lower, often volatile or struggling growth
-      Country == "South Africa" ~ runif(n(), min = -1.0, max = 2.0),
-      TRUE ~ 0
-    ),
-    GDP_Growth = round(GDP_Growth, 2)
-  )
-
-# 2. Simulate a long-format version of the GDP_Per_Capita data
-gdp_per_capita_long <- expand.grid(Country = countries, Year = years) %>%
-  as_tibble() %>%
-  mutate(
-    # Assigning plausible relative GDP per Capita values
-    GDP_Per_Capita = case_when(
-      Country == "United States" ~ 65000 + (Year - 2021) * 3000,     # High and rising
-      Country == "Denmark" ~ 60000 + (Year - 2021) * 2500, # High and rising
-      Country == "Türkiye" ~ 10000 + (Year - 2021) * 500,   # Middle income, steady growth
-      Country == "South Africa" ~ 6500 + (Year - 2021) * 150, # Lower middle income, slow growth
-      TRUE ~ 10000
-    ),
-    GDP_Per_Capita = round(GDP_Per_Capita, 0)
-  )
-
-# Merge the two long-format datasets
-combined_gdp_data <- gdp_growth_long %>%
-  left_join(
-    gdp_per_capita_long,
-    by = c("Country", "Year")
-  ) %>%
-  # Apply filters to ensure clean data points
-  filter(
-    !is.na(GDP_Per_Capita),
-    GDP_Per_Capita > 0,
-    !is.na(GDP_Growth)
-  )
-```
-
-```{r create-gganimate-for-plot-4, message=FALSE}
-plot4_animation <- combined_gdp_data %>%
-  ggplot(aes(x = GDP_Per_Capita,
-             y = GDP_Growth,
-             # Color by Country to distinguish trajectories
-             color = Country,
-             # Group by Country is mandatory for gganimate to track points
-             group = Country)) +
-  
-  # Use geom_line to show the path of the country over time (key for trajectory)
-  geom_line(linewidth = 0.5, alpha = 0.4) +
-  
-  # Use geom_point, sized by GDP per Capita (classic Gapminder bubble size)
-  geom_point(aes(size = GDP_Per_Capita / 5000), alpha = 0.7) +
-  
-  # Add labels to the points (shows the current state clearly)
-  geom_text(aes(label = Country), 
-            vjust = -1, 
-            check_overlap = TRUE, 
-            show.legend = FALSE, 
-            size = 3) +
-
-  # Scale X-axis logarithmically and format labels cleanly
-  scale_x_log10(labels = scales::label_comma(accuracy = 1)) +
-  
-  # Add titles and labels
+plot4_clean <- merged_data %>%
+  ggplot(aes(
+    x = GDP_Per_Capita,
+    y = GDP_Growth,
+    color = Region,   # Only color → very clear
+    group = Country
+  )) +
+  geom_point(size = 2.8, alpha = 0.85) +
+  scale_x_log10(labels = scales::comma) +
   labs(
-    title = "Global Economic Trajectories (2021-2024)",
-    subtitle = "Year: {round(frame_time)}", # Use frame_time for clean year display
-    x = "GDP per Capita (USD, log scale)",
-    y = "Annual GDP Growth (%)",
-    size = "GDP per Capita (Relative Size)",
-    color = "Country"
+    title = "Global Economic Recovery After COVID-19",
+    subtitle = "Year: {closest_state}",
+    x = "GDP per Capita (log scale)",
+    y = "GDP Growth (%)",
+    color = "Group",
+    caption = "Source: OECD"
   ) +
-  
-  # Use a clean theme
   theme_minimal(base_size = 14) +
   theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(face = "italic")
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold")
   ) +
-  
-  # gganimate components 
-  # Animate over the 'Year' variable
-  transition_states(Year, transition_length = 2, state_length = 1) +
-  
-  # Ensures the axes and titles remain stable
-  view_follow(fixed_x = TRUE, fixed_y = TRUE) +
-  
-  # Visual effects for entry/exit
-  ease_aes('sine-in-out')
+  transition_states(Year, transition_length = 0.5, state_length = 0.7) +
+  enter_fade() +
+  exit_fade()
 
-# Render the animation
-animate(plot4_animation,
-        fps = 10,
-        duration = 15,
-        width = 800,
-        height = 600,
-        renderer = gifski_renderer(loop = TRUE))
-
+animate(
+  plot4_clean,
+  fps = 10,
+  duration = 9,
+  width = 750,
+  height = 500,
+  renderer = gifski_renderer()
+)
+```
 ```
 
 
