@@ -29,7 +29,7 @@ The first dataset provides annual GDP growth figures for OECD member states and 
 
 After data cleaning, our datasets contained fewer than 750 combined data points, with 46 observations and 8 variables in each initial dataset, before further changes were made down the line. We excluded large economic blocs such as the EU or G7 to focus exclusively on national-level performance and to avoid potential data overlap. For our analysis, we will focus primarily on four countries: the United States, Denmark, South Africa, and India. Two of these nations are OECD members, while the other two are not. This is a deliberate choice to highlight contrasts between advanced and emerging economies. 
 
-Moreover, we plan to add a few additional variables to our dataset by categorizing the levels of economic recovery into performance groups. These categories may include classifications such as stagnating, recovering, and booming. This transformation will allow us to better visualize and compare how selected countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
+Moreover, we plan to add a few additional variables to our dataset by categorizing the levels of economic recovery into performance groups. These categories may include classifications such as recovering and booming. This transformation will allow us to better visualize and compare how selected countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
 
 For this project, our research focuses on the varying levels of economic recovery around the world following the COVID-19 pandemic. We aim to closely examine the observations in our datasets to identify potential patterns (such as geographic or regional trends) that reveal which countries recovered quickly and which continued to face significant challenges. 
 Some of the questions we hope to explore include: 
@@ -37,7 +37,7 @@ Some of the questions we hope to explore include:
 * Are there identifiable geographic patterns indicating which countries were more effective in rebounding economically? 
 * How much did the average year-on-year GDP growth rates vary across countries and regions, and were there any notable outliers?
 * What factors might explain why some countries recovered more successfully than others? We plan to compare and analyze selected countries. 
-* How can we meaningfully categorize countries into groups such as stagnating, recovering, and booming, and what does the global distribution of these categories reveal about overall recovery trends?
+* How can we meaningfully categorize countries into groups such as recovering and booming, and what does the global distribution of these categories reveal about overall recovery trends?
 * Among our four selected economies, which performed best, and what key drivers contributed to their relative success?
 
 
@@ -74,10 +74,10 @@ The variables we will be visualizing to explore our research question are the fo
 * GDP_Per_Capita: Core measure of economic recovery per person within a geographich region; allows comparison across countries and time.
 * Timeline: Time-series analysis to see trends over time between 2018 to 2024.
 * Country: Compare recovery across nations and regions.
-* Recovery_category: Helps visualize and compare group-level performance; categorized as “Stagnating,” “Recovering,” “Booming”.
+* Recovery_category: Helps visualize and compare group-level performance; categorized as  “Recovering” and “Booming”.
 * Continent/region: Explore geographic patterns in recovery
 
-Other additional data we may explore are datasets which will categorize the levels of economic recovery from COVID-19 into performance groups. These categories may include classifications such as stagnating, recovering, and booming. This transformation will allow us to better visualize and compare how different countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
+Other additional data we may explore are datasets which will categorize the levels of economic recovery from COVID-19 into performance groups. These categories may include classifications such as recovering and booming. This transformation will allow us to better visualize and compare how different countries performed during the post-Covid recovery period, providing clearer insights into the relative strength and pace of their economic rebounds.
 
 Our goal for the project is to examine the differences in economic recovery across OECD countries from the COVID-19 pandemic. We will observe using GDP growth data ranging from 2018 to 2024, as well as measuring GDP Per Capita data during the same time period. Our view comes from different statistics which categorize countries that experienced the fastest and most sustained economic recoveries. 
 
@@ -91,7 +91,7 @@ We’ll start with exploratory data analysis to help us understand trends and th
 
 * Country: We’ll use this variable to compare the economic recoveries across nations. Differences can range due to policies or resource factors that may limit a nation's growth or have it thrive.
 
-* Recovery_category: We’ll classify countries as Stagnating, Recovering, or Booming based on their post pandemic GDP growth averages. This will allow us to visualise and for our group to make an analysis.
+* Recovery_category: We’ll classify countries as Recovering or Booming based on their post pandemic GDP growth averages. This will allow us to visualise and for our group to make an analysis.
 
 * Continent/Region: From this we’ll be able to identify patterns from different regions, and how different regions were affected and able to recover faster/slower.
 
@@ -176,7 +176,7 @@ Planned Data Visualization:
 - Bar Charts: to compare the average GDP growth by each country
 - Scatter Plot: to represent the recovery time vs. GDP growth
 
-```{r growth-over-time, message = FALSE, warning=FALSE}
+```{r growth-over-time, message = FALSE, warning = FALSE, fig.alt = "Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."}
 # Filter for your four focus countries
 focus_countries <- c("United States", "Denmark", "South Africa", "India")
 
@@ -203,7 +203,7 @@ ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
 plot1_gdp_trends
 ```
 
-```{r avg-post-pandemic-growth, message = FALSE}
+```{r avg-post-pandemic-growth, message = FALSE, fig.alt = "Bar chart showing the top 15 countries by average GDP growth from 2021 to 2024. Bars run horizontally with countries on the y-axis and GDP growth on the x-axis. India has the highest average growth at about 8%, followed by Türkiye, Ireland, and China near 6%, with the remaining countries showing growth between roughly 4% and 5%."}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
   group_by(`Country`) %>%
@@ -227,7 +227,7 @@ ggsave("plot2_post_pandemic.png", plot = plot2_post_pandemic, width = 7, height 
 plot2_post_pandemic
 ```
 
-```{r growth-distribution-by-recovery, message = FALSE}
+```{r growth-distribution-by-recovery, message = FALSE, fig.alt = "Box plot comparing GDP growth distribution for two recovery categories from 2021 to 2024. The x-axis shows “Booming” and “Recovering,” and the y-axis shows GDP growth in percent. The “Booming” group has higher median growth and a wider range of values, including an upper outlier, while the “Recovering” group shows lower median growth and a narrower spread."}
 # Step 1: Categorize countries based on post-pandemic average growth
 gdp_growth_long_cat <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
@@ -235,7 +235,6 @@ gdp_growth_long_cat <- gdp_growth_long %>%
   mutate(
     avg_growth = mean(GDP_Growth, na.rm = TRUE),
     Recovery_Category = case_when(
-      avg_growth <= 0 ~ "Stagnating",
       avg_growth > 0 & avg_growth <= 3 ~ "Recovering",
       avg_growth > 3 ~ "Booming",
       TRUE ~ NA_character_
@@ -258,7 +257,6 @@ plot3_box <- gdp_growth_long_cat %>%
     y = "GDP Growth (%)",
     ) +
   scale_fill_manual(values = c(
-    "Stagnating" = "#E74C3C",
     "Recovering" = "#F1C40F",
     "Booming" = "#2ECC71"
   )) +

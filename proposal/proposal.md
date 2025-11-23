@@ -46,11 +46,11 @@ contrasts between advanced and emerging economies.
 
 Moreover, we plan to add a few additional variables to our dataset by
 categorizing the levels of economic recovery into performance groups.
-These categories may include classifications such as stagnating,
-recovering, and booming. This transformation will allow us to better
-visualize and compare how selected countries performed during the
-post-Covid recovery period, providing clearer insights into the relative
-strength and pace of their economic rebounds.
+These categories may include classifications such as recovering and
+booming. This transformation will allow us to better visualize and
+compare how selected countries performed during the post-Covid recovery
+period, providing clearer insights into the relative strength and pace
+of their economic rebounds.
 
 For this project, our research focuses on the varying levels of economic
 recovery around the world following the COVID-19 pandemic. We aim to
@@ -67,8 +67,8 @@ challenges. Some of the questions we hope to explore include:
   successfully than others? We plan to compare and analyze selected
   countries.
 - How can we meaningfully categorize countries into groups such as
-  stagnating, recovering, and booming, and what does the global
-  distribution of these categories reveal about overall recovery trends?
+  recovering and booming, and what does the global distribution of these
+  categories reveal about overall recovery trends?
 - Among our four selected economies, which performed best, and what key
   drivers contributed to their relative success?
 
@@ -152,16 +152,16 @@ are the following:
   2024.
 - Country: Compare recovery across nations and regions.
 - Recovery_category: Helps visualize and compare group-level
-  performance; categorized as “Stagnating,” “Recovering,” “Booming”.
+  performance; categorized as “Recovering” and “Booming”.
 - Continent/region: Explore geographic patterns in recovery
 
 Other additional data we may explore are datasets which will categorize
 the levels of economic recovery from COVID-19 into performance groups.
-These categories may include classifications such as stagnating,
-recovering, and booming. This transformation will allow us to better
-visualize and compare how different countries performed during the
-post-Covid recovery period, providing clearer insights into the relative
-strength and pace of their economic rebounds.
+These categories may include classifications such as recovering and
+booming. This transformation will allow us to better visualize and
+compare how different countries performed during the post-Covid recovery
+period, providing clearer insights into the relative strength and pace
+of their economic rebounds.
 
 Our goal for the project is to examine the differences in economic
 recovery across OECD countries from the COVID-19 pandemic. We will
@@ -196,9 +196,9 @@ within the time period, while distinguishing geography, and economics.
   across nations. Differences can range due to policies or resource
   factors that may limit a nation’s growth or have it thrive.
 
-- Recovery_category: We’ll classify countries as Stagnating, Recovering,
-  or Booming based on their post pandemic GDP growth averages. This will
-  allow us to visualise and for our group to make an analysis.
+- Recovery_category: We’ll classify countries as Recovering or Booming
+  based on their post pandemic GDP growth averages. This will allow us
+  to visualise and for our group to make an analysis.
 
 - Continent/Region: From this we’ll be able to identify patterns from
   different regions, and how different regions were affected and able to
@@ -326,14 +326,14 @@ focus_countries <- c("United States", "Denmark", "South Africa", "India")
     annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5))
 ```
 
-![](proposal_files/figure-gfm/growth-over-time-1.png)<!-- -->
+<img src="proposal_files/figure-gfm/growth-over-time-1.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
 
 ``` r
 ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
 plot1_gdp_trends
 ```
 
-![](proposal_files/figure-gfm/growth-over-time-2.png)<!-- -->
+<img src="proposal_files/figure-gfm/growth-over-time-2.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
 
 ``` r
 post_pandemic_growth <- gdp_growth_long %>%
@@ -359,7 +359,7 @@ ggsave("plot2_post_pandemic.png", plot = plot2_post_pandemic, width = 7, height 
 plot2_post_pandemic
 ```
 
-![](proposal_files/figure-gfm/avg-post-pandemic-growth-1.png)<!-- -->
+<img src="proposal_files/figure-gfm/avg-post-pandemic-growth-1.png" alt="Bar chart showing the top 15 countries by average GDP growth from 2021 to 2024. Bars run horizontally with countries on the y-axis and GDP growth on the x-axis. India has the highest average growth at about 8%, followed by Türkiye, Ireland, and China near 6%, with the remaining countries showing growth between roughly 4% and 5%."  />
 
 ``` r
 # Step 1: Categorize countries based on post-pandemic average growth
@@ -369,7 +369,6 @@ gdp_growth_long_cat <- gdp_growth_long %>%
   mutate(
     avg_growth = mean(GDP_Growth, na.rm = TRUE),
     Recovery_Category = case_when(
-      avg_growth <= 0 ~ "Stagnating",
       avg_growth > 0 & avg_growth <= 3 ~ "Recovering",
       avg_growth > 3 ~ "Booming",
       TRUE ~ NA_character_
@@ -392,7 +391,6 @@ plot3_box <- gdp_growth_long_cat %>%
     y = "GDP Growth (%)",
     ) +
   scale_fill_manual(values = c(
-    "Stagnating" = "#E74C3C",
     "Recovering" = "#F1C40F",
     "Booming" = "#2ECC71"
   )) +
@@ -405,7 +403,7 @@ ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
 plot3_box
 ```
 
-![](proposal_files/figure-gfm/growth-distribution-by-recovery-1.png)<!-- -->
+<img src="proposal_files/figure-gfm/growth-distribution-by-recovery-1.png" alt="Box plot comparing GDP growth distribution for two recovery categories from 2021 to 2024. The x-axis shows “Booming” and “Recovering,” and the y-axis shows GDP growth in percent. The “Booming” group has higher median growth and a wider range of values, including an upper outlier, while the “Recovering” group shows lower median growth and a narrower spread."  />
 
 ``` r
 # Region classification (simple)

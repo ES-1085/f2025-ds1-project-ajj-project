@@ -103,7 +103,7 @@ gdp_growth_long <- gdp_growth_long %>%
 
 Already handled above (pivot + filter + mutate).
 
-```{r growth-over-time, message = FALSE}
+```{r growth-over-time, message = FALSE, fig.alt = "Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."}
 # Filter for your four focus countries
 focus_countries <- c("United States", "Denmark", "South Africa", "India")
 
@@ -134,7 +134,7 @@ Description:
 
 ### Plot 2: Average GDP Growth by Category
 
-```{r avg-post-pandemic-growth, message = FALSE}
+```{r avg-post-pandemic-growth, message = FALSE, fig.alt = "Bar chart showing the top 15 countries by average GDP growth from 2021 to 2024. Bars run horizontally with countries on the y-axis and GDP growth on the x-axis. India has the highest average growth at about 8%, followed by Türkiye, Ireland, and China near 6%, with the remaining countries showing growth between roughly 4% and 5%."}
 post_pandemic_growth <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
   group_by(`Country`) %>%
@@ -163,7 +163,7 @@ Description:
 
 ### Plot 3: GDP Growth Distribution by Recovery Category (2021-2024)
 
-```{r growth-distribution-by-recovery, message = FALSE}
+```{r growth-distribution-by-recovery, message = FALSE, fig.alt = "Box plot comparing GDP growth distribution for two recovery categories from 2021 to 2024. The x-axis shows “Booming” and “Recovering,” and the y-axis shows GDP growth in percent. The “Booming” group has higher median growth and a wider range of values, including an upper outlier, while the “Recovering” group shows lower median growth and a narrower spread."}
 # Step 1: Categorize countries based on post-pandemic average growth
 gdp_growth_long_cat <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
@@ -171,7 +171,6 @@ gdp_growth_long_cat <- gdp_growth_long %>%
   mutate(
     avg_growth = mean(GDP_Growth, na.rm = TRUE),
     Recovery_Category = case_when(
-      avg_growth <= 0 ~ "Stagnating",
       avg_growth > 0 & avg_growth <= 3 ~ "Recovering",
       avg_growth > 3 ~ "Booming",
       TRUE ~ NA_character_
@@ -194,7 +193,6 @@ plot3_box <- gdp_growth_long_cat %>%
     y = "GDP Growth (%)",
     ) +
   scale_fill_manual(values = c(
-    "Stagnating" = "#E74C3C",
     "Recovering" = "#F1C40F",
     "Booming" = "#2ECC71"
   )) +
@@ -211,7 +209,7 @@ Description:
 
 ### Plot 4: GDP Growth Animation  
 
-```{r plot4-gganimate, warning=FALSE, eval=FALSE}
+```{r plot4-gganimate, warning = FALSE, eval = FALSE, fig.alt = }
 
 # Region classification (simple)
 region_map <- tibble(
@@ -220,6 +218,7 @@ region_map <- tibble(
     Country %in% c("United States", "Canada", "Mexico") ~ "North America",
     Country %in% c("Denmark", "France", "Germany", "United Kingdom", "Italy", "Spain",
                    "Norway","Sweden","Finland","Netherlands","Belgium","Switzerland") ~ "Europe",
+    Country %in% c("India") ~ "Asia",
     Country %in% c("Türkiye") ~ "Middle East",
     Country %in% c("South Africa") ~ "Africa",
     TRUE ~ "Other"
@@ -241,14 +240,14 @@ gdp_region <- GDP_Data %>%
   left_join(region_map, by="Country")
 
 
-focus_countries <- c("United States", "Denmark", "Türkiye", "South Africa")
+focus_countries <- c("United States", "Denmark", "India", "South Africa")
 gdp_region <- gdp_region %>%
   mutate(Highlight = ifelse(Country %in% focus_countries, "Focus", "Other"))
 
 focus_colors <- c(
   "United States" = "#0072B2",
   "Denmark"       = "#009E73",
-  "Türkiye"        = "#D55E00",
+  "India"        = "#D55E00",
   "South Africa"  = "#CC79A7"
 )
 
@@ -288,13 +287,14 @@ plot_region_covid <- gdp_region %>%
     size = 5,
     show.legend = FALSE
   ) +
-
+  
   scale_color_manual(
     values = c(
       "North America"="darkgreen",
       "Europe"="darkblue",
       "Africa"="orange",
       "Middle East"="purple",
+      "Asia"="red",
       "Other"="grey70",
       focus_colors
     )
@@ -326,4 +326,4 @@ unique(GDP_Data$`Time period`)
 
 Description: 
 
-This plot shows annual GDP growth from 2018 to 2024 for all countries in the dataset, grouped by region and animated over time. The shaded red bar marks the 2020 COVID-19 recession, which produces a sharp downturn across regions. Four countries (the United States, Denmark, Türkiye, and South Africa) are highlighted to show how recovery patterns differed across North America, Europe, the Middle East, and Africa.
+This plot shows annual GDP growth from 2018 to 2024 for all countries in the dataset, grouped by region and animated over time. The shaded red bar marks the 2020 COVID-19 recession, which produces a sharp downturn across regions. Four countries (the United States, Denmark, India, and South Africa) are highlighted to show how recovery patterns differed across North America, Europe, Asia, and Africa.
