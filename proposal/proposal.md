@@ -22,26 +22,27 @@ library(scales)
 ## 1. Introduction
 
 The data for our group project is sourced from the OECD, specifically
-from two datasets: “Annual Real GDP Growth - OECD and Non-OECD
-Countries” and “Annual GDP and Consumption Per Capita - OECD and
-Non-OECD Countries.” The first dataset provides annual GDP growth
-figures for OECD member states and selected non-member countries
-covering the years 2018-2024, while the second dataset reports GDP and
-consumption per capita over the same period. Together, these datasets
-allow us to analyze how different nations recovered economically
-following the severe disruptions of the COVID-19 pandemic. The selected
-time frame enables us to trace economic trajectories before, during, and
-after the pandemic, helping us understand both the immediate impact and
-the long-term recovery patterns.
+from two sources: “Annual Real GDP Growth - OECD and Non-OECD Countries”
+and “Annual GDP and Consumption Per Capita - OECD and Non-OECD
+Countries.” The first dataset provides annual GDP growth figures for
+OECD member states and selected non-member countries covering the years
+2018-2024, while the second dataset reports GDP and consumption per
+capita over the same period. Together, these datasets allow us to
+analyze how different nations recovered economically following the
+severe disruptions of the COVID-19 pandemic. The selected time frame
+enables us to trace economic trajectories before, during, and after the
+pandemic, helping us understand both the immediate impact and the
+long-term recovery patterns.
 
-After data cleaning, our combined dataset contains fewer than 500 data
-points, with x observations and x variables. We excluded large economic
-blocs such as the EU or G7 to focus exclusively on national-level
-performance and to avoid potential data overlap. For our analysis, we
-will focus on four countries: the United States, Denmark, South Africa,
-and India. Two of these nations are OECD members, while the other two
-are not. This is a deliberate choice to highlight contrasts between
-advanced and emerging economies.
+After data cleaning, our datasets contained fewer than 750 combined data
+points, with 46 observations and 8 variables in each initial dataset,
+before further changes were made down the line. We excluded large
+economic blocs such as the EU or G7 to focus exclusively on
+national-level performance and to avoid potential data overlap. For our
+analysis, we will focus primarily on four countries: the United States,
+Denmark, South Africa, and India. Two of these nations are OECD members,
+while the other two are not. This is a deliberate choice to highlight
+contrasts between advanced and emerging economies.
 
 Moreover, we plan to add a few additional variables to our dataset by
 categorizing the levels of economic recovery into performance groups.
@@ -145,8 +146,10 @@ are the following:
 
 - GDP_growth: Core measure of economic recovery; allows comparison
   across countries and time.
-- Quarter: Time-series analysis to see trends over time between 2018 Q2
-  to 2025 Q2.
+- GDP_Per_Capita: Core measure of economic recovery per person within a
+  geographich region; allows comparison across countries and time.
+- Timeline: Time-series analysis to see trends over time between 2018 to
+  2024.
 - Country: Compare recovery across nations and regions.
 - Recovery_category: Helps visualize and compare group-level
   performance; categorized as “Stagnating,” “Recovering,” “Booming”.
@@ -162,9 +165,10 @@ strength and pace of their economic rebounds.
 
 Our goal for the project is to examine the differences in economic
 recovery across OECD countries from the COVID-19 pandemic. We will
-observe using quarterly GDP growth data ranging from 2018 Q2 to 2025 Q2.
-Our view comes from different statistics which categorises countries
-that experienced the fastest and most sustained economic recoveries.
+observe using GDP growth data ranging from 2018 to 2024, as well as
+measuring GDP Per Capita data during the same time period. Our view
+comes from different statistics which categorize countries that
+experienced the fastest and most sustained economic recoveries.
 
 We’ll start with exploratory data analysis to help us understand trends
 and the structure of our dataset. We’ll summarize tendencies, and other
@@ -172,11 +176,18 @@ important information the dataset provides. Once we understand the
 dataset, then we’ll begin to visualize and explore the recovery patterns
 within the time period, while distinguishing geography, and economics.
 
-- GDP_growth: GDP growth is the variable representing the quarterly
+- GDP_growth: GDP growth is the variable representing the annual
   percentage change. It is the main measure of economic recovery, and
   allows us to compare within countries and time periods.
 
-- Quarter: The dataset starts in 2018 Q2 to 2025 Q2, which gives us
+- GDP_Per_Capita: GDP Per Capita is the variable representing the annual
+  GDP percentage change per individual in a geographic region. It is one
+  of the main measures of economic recovery, and allows us to compare
+  within countries and time periods. It provides a similar, yet slightly
+  different metric to just GDP growth by additionally exploring how
+  citizens’ wealth grew over the selected time period.
+
+- Timeline: The dataset starts in 2018 to 2024, which gives us
   information on GDP before, during, and after the pandemic. Looking at
   the times before and present day will directly provide us with the
   recovery time and sustainability.
@@ -397,8 +408,6 @@ plot3_box
 ![](proposal_files/figure-gfm/growth-distribution-by-recovery-1.png)<!-- -->
 
 ``` r
-# error in knitting --> FIX
-
 # Region classification (simple)
 region_map <- tibble(
   Country = unique(GDP_Data$`Time period`),
