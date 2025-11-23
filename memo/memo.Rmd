@@ -12,6 +12,10 @@ library(broom)
 library(gganimate)
 library(scales)
 library(readxl)
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(gifski)
 ```
 
 ## Data Clean Up Steps for Overall Data
@@ -209,7 +213,7 @@ Description:
 
 ### Plot 4: GDP Growth Animation  
 
-```{r plot4-gganimate, warning = FALSE, eval = FALSE, fig.alt = }
+```{r plot4-gganimate, warning = FALSE, message = FALSE}
 
 # Region classification (simple)
 region_map <- tibble(
@@ -317,6 +321,7 @@ animate(
   duration = 10,
   width = 750,
   height = 500,
+  units = "px",
   renderer = gifski_renderer()
 )
 

@@ -15,6 +15,10 @@ library(broom)
 library(gganimate)
 library(scales)
 library(readxl)
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(gifski)
 ```
 
 ## Data Clean Up Steps for Overall Data
@@ -328,11 +332,41 @@ animate(
   duration = 10,
   width = 750,
   height = 500,
+  units = "px",
   renderer = gifski_renderer()
 )
+```
 
+![](memo_files/figure-gfm/plot4-gganimate-1.gif)<!-- -->
+
+``` r
 unique(GDP_Data$`Time period`)
 ```
+
+    ##  [1] "Country"                         "Australia"                      
+    ##  [3] "Austria"                         "Belgium"                        
+    ##  [5] "Canada"                          "Chile"                          
+    ##  [7] "Colombia"                        "Costa Rica"                     
+    ##  [9] "Czechia"                         "Denmark"                        
+    ## [11] "Estonia"                         "Finland"                        
+    ## [13] "France"                          "Germany"                        
+    ## [15] "Greece"                          "Hungary"                        
+    ## [17] "Iceland"                         "Ireland"                        
+    ## [19] "Israel"                          "Italy"                          
+    ## [21] "Japan"                           "Korea"                          
+    ## [23] "Latvia"                          "Lithuania"                      
+    ## [25] "Luxembourg"                      "Mexico"                         
+    ## [27] "Netherlands"                     "New Zealand"                    
+    ## [29] "Norway"                          "Poland"                         
+    ## [31] "Portugal"                        "Slovak Republic"                
+    ## [33] "Slovenia"                        "Spain"                          
+    ## [35] "Sweden"                          "Switzerland"                    
+    ## [37] "Türkiye"                         "United Kingdom"                 
+    ## [39] "United States"                   "·  Argentina"                   
+    ## [41] "·  Brazil"                       "·  China (People’s Republic of)"
+    ## [43] "·  India"                        "·  Indonesia"                   
+    ## [45] "·  Russia"                       "·  Saudi Arabia"                
+    ## [47] "·  South Africa"
 
 Description:
 
