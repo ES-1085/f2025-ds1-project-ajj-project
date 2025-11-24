@@ -11,12 +11,13 @@ library(ggplot2)
 library(ggrepel)
 library(gganimate)  
 library(scales)  
+library(geomtextpath) # Provides geom_textpath
 ```
 
 ``` r
-# install.packages("gganimate")
 # install.packages("gifski")
 # install.packages("png")
+# install.packages(c("ggplot2", "gganimate", "geomtextpath", "dplyr"))
 ```
 
 ## 1. Introduction
@@ -306,7 +307,7 @@ represent the recovery time vs. GDP growth
 # Filter for your four focus countries
 focus_countries <- c("United States", "Denmark", "South Africa", "India")
 
-(plot1_gdp_trends <- gdp_growth_long %>%
+plot1_gdp_trends <- gdp_growth_long %>%
   filter(`Country` %in% focus_countries) %>%
   ggplot(aes(x = Year, y = GDP_Growth, color = `Country`, group = `Country`)) +
   geom_line(size = 1.2) +
@@ -323,17 +324,13 @@ focus_countries <- c("United States", "Denmark", "South Africa", "India")
   theme(legend.position = "bottom") + 
   scale_color_viridis_d() +
     ylim(-10, NA) +
-    annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5))
-```
+    annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5)
 
-<img src="proposal_files/figure-gfm/growth-over-time-1.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
-
-``` r
 ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
 plot1_gdp_trends
 ```
 
-<img src="proposal_files/figure-gfm/growth-over-time-2.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
+<img src="proposal_files/figure-gfm/growth-over-time-1.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
 
 ``` r
 post_pandemic_growth <- gdp_growth_long %>%
@@ -406,45 +403,19 @@ plot3_box
 <img src="proposal_files/figure-gfm/growth-distribution-by-recovery-1.png" alt="Box plot comparing GDP growth distribution for two recovery categories from 2021 to 2024. The x-axis shows “Booming” and “Recovering,” and the y-axis shows GDP growth in percent. The “Booming” group has higher median growth and a wider range of values, including an upper outlier, while the “Recovering” group shows lower median growth and a narrower spread."  />
 
 ``` r
-# Region classification (simple)
-region_map <- tibble(
-  Country = unique(GDP_Data$`Time period`),
-  Region = case_when(
-    Country %in% c("United States", "Canada", "Mexico") ~ "North America",
-    Country %in% c("Denmark", "France", "Germany", "United Kingdom", "Italy", "Spain",
-                   "Norway","Sweden","Finland","Netherlands","Belgium","Switzerland") ~ "Europe",
-    Country %in% c("Türkiye") ~ "Middle East",
-    Country %in% c("South Africa") ~ "Africa",
-    TRUE ~ "Other"
-  )
-)
-
-gdp_region <- GDP_Data %>%
-  pivot_longer(
-    cols = matches("^20"),
-    names_to = "Year",
-    values_to = "GDP_Growth"
-  ) %>%
-  mutate(
-    Country = `Time period`,
-    Year = as.integer(Year),
-    GDP_Growth = as.numeric(GDP_Growth)
-  ) %>%
-  select(-`Time period`) %>%
-  left_join(region_map, by="Country")
-
-
-focus_countries <- c("United States", "Denmark", "Türkiye", "South Africa")
+# Highlight countries
+focus_countries <- c("United States", "Denmark", "India", "South Africa")
 gdp_region <- gdp_region %>%
   mutate(Highlight = ifelse(Country %in% focus_countries, "Focus", "Other"))
 
 focus_colors <- c(
   "United States" = "#0072B2",
   "Denmark"       = "#009E73",
-  "Türkiye"        = "#D55E00",
+  "India"         = "#D55E00",
   "South Africa"  = "#CC79A7"
 )
 
+# Plot with COVID shading and labels that stick to one side
 plot_region_covid <- gdp_region %>%
   ggplot(aes(x = Year, y = GDP_Growth, group = Country)) +
 
@@ -475,11 +446,17 @@ plot_region_covid <- gdp_region %>%
     size = 2.5
   ) +
 
+  # Labels that follow the lines but stick to the right side
   geom_text_repel(
     data = gdp_region %>% filter(Highlight == "Focus"),
     aes(label = Country, color = Country),
+    nudge_x = 0.2,        # shift all labels to the right
+    direction = "y",       # only allow movement vertically
+    hjust = 0,             # left-align text
+    segment.color = NA,    # remove connector lines
     size = 5,
-    show.legend = FALSE
+    show.legend = FALSE,
+    force = 0.1            # reduces jitter so labels don't jump
   ) +
 
   scale_color_manual(
@@ -487,7 +464,7 @@ plot_region_covid <- gdp_region %>%
       "North America"="darkgreen",
       "Europe"="darkblue",
       "Africa"="orange",
-      "Middle East"="purple",
+      "Southeast Asia"="purple",
       "Other"="grey70",
       focus_colors
     )
@@ -495,7 +472,7 @@ plot_region_covid <- gdp_region %>%
 
   labs(
     title = "GDP Growth by Region (2018–2024)",
-    subtitle = "COVID-19 recession in 2020 is highlighted\nYear: {frame_along}",
+    subtitle = "COVID-19 recession in 2020 is highlighted",
     x = "Year",
     y = "GDP Growth (%)",
     color = "Region / Highlighted Countries"
@@ -504,6 +481,7 @@ plot_region_covid <- gdp_region %>%
   theme(legend.position = "bottom") +
   transition_reveal(Year)
 
+# Animate
 animate(
   plot_region_covid,
   fps = 9,
@@ -512,6 +490,4 @@ animate(
   height = 500,
   renderer = gifski_renderer()
 )
-
-unique(GDP_Data$`Time period`)
 ```
