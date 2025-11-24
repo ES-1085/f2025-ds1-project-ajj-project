@@ -213,7 +213,7 @@ Description:
 
 ### Plot 4: GDP Growth Animation  
 
-```{r plot4-gganimate, warning = FALSE, message = FALSE}
+```{r plot4-gganimate, warning = FALSE, message = FALSE, fig.alt = "Animated line chart showing annual GDP growth from 2018 to 2024 for all countries in the dataset, with individual country lines shown in light grey and four highlighted countries shown in color. A red-shaded band marks the year 2020. The animation reveals each year sequentially. India shows the strongest recovery after 2020, rising the highest among the highlighted countries, while the United States, Denmark, and South Africa show more moderate growth paths."}
 
 # Region classification (simple)
 region_map <- tibble(
@@ -222,7 +222,6 @@ region_map <- tibble(
     Country %in% c("United States", "Canada", "Mexico") ~ "North America",
     Country %in% c("Denmark", "France", "Germany", "United Kingdom", "Italy", "Spain",
                    "Norway","Sweden","Finland","Netherlands","Belgium","Switzerland") ~ "Europe",
-    Country %in% c("India") ~ "Asia",
     Country %in% c("Türkiye") ~ "Middle East",
     Country %in% c("South Africa") ~ "Africa",
     TRUE ~ "Other"
@@ -244,14 +243,14 @@ gdp_region <- GDP_Data %>%
   left_join(region_map, by="Country")
 
 
-focus_countries <- c("United States", "Denmark", "India", "South Africa")
+focus_countries <- c("United States", "Denmark", "Türkiye", "South Africa")
 gdp_region <- gdp_region %>%
   mutate(Highlight = ifelse(Country %in% focus_countries, "Focus", "Other"))
 
 focus_colors <- c(
   "United States" = "#0072B2",
   "Denmark"       = "#009E73",
-  "India"        = "#D55E00",
+  "Türkiye"        = "#D55E00",
   "South Africa"  = "#CC79A7"
 )
 
@@ -291,14 +290,13 @@ plot_region_covid <- gdp_region %>%
     size = 5,
     show.legend = FALSE
   ) +
-  
+
   scale_color_manual(
     values = c(
       "North America"="darkgreen",
       "Europe"="darkblue",
       "Africa"="orange",
       "Middle East"="purple",
-      "Asia"="red",
       "Other"="grey70",
       focus_colors
     )
@@ -321,7 +319,6 @@ animate(
   duration = 10,
   width = 750,
   height = 500,
-  units = "px",
   renderer = gifski_renderer()
 )
 

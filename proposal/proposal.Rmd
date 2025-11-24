@@ -269,7 +269,7 @@ ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
 plot3_box
 ```
 
-```{r plot4-gganimate, message=FALSE, eval=FALSE}
+```{r plot4-gganimate, message=FALSE, eval=FALSE, fig.alt = "Animated line chart showing annual GDP growth from 2018 to 2024 for all countries in the dataset, with individual country lines shown in light grey and four highlighted countries shown in color. A red-shaded band marks the year 2020. The animation reveals each year sequentially. India shows the strongest recovery after 2020, rising the highest among the highlighted countries, while the United States, Denmark, and South Africa show more moderate growth paths."}
 # Region classification (simple)
 region_map <- tibble(
   Country = unique(GDP_Data$`Time period`),
