@@ -520,7 +520,7 @@ growth_income_plot <- growth_vs_income |>
   scale_x_continuous(labels = scales::comma) +
   labs(
     title    = "GDP per Capita vs. Average Post-COVID GDP Growth",
-    subtitle = "Average GDP growth vs GDP per capita (2021-2024)",
+    subtitle = "Higher-income economies tended to grow more slowly after COVID, while lower-income countries grew faster.",
     x        = "GDP per capita in USD 2021-2024",
     y        = "Annual GDP growth 2021-2024 (%)",
     color    = "",
