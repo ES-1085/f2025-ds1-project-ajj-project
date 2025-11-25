@@ -284,6 +284,11 @@ average annual growth above 3 percent during the post-COVID recovery.
 The Recovering category has fewer countries and shows a noticeably lower
 median rate of growth.
 
+Initially, we wanted to add a category named “stagnating” but we decided
+against doing so, as no single country in our datasets had average
+growth in negative levels during the selected time period, which would
+have classified them as stagnating.
+
 The Booming group has a wider range of values and includes one clear
 outlier at the top, which represents Ireland’s unusually high
 post-pandemic growth. The Recovering group is more tightly clustered,
@@ -435,3 +440,95 @@ The animation helps reveal not just the magnitude of growth changes, but
 also the timing and steepness of each country’s trajectory. This dynamic
 presentation makes it easier to see how the shock of 2020 unfolded and
 how different economies diverged in the years that followed.
+
+### Plot 5: GDP per Capita vs. Average Post-COVID GDP Growth
+
+``` r
+# 1. Clean and average GDP per capita, 2021-2024
+
+gdp_pc_avg <- GDP_Per_Capita |>
+  mutate(Country = trimws(Country)) |>
+  # make sure year columns are numeric
+  mutate(across(`2021`:`2024`, as.numeric)) |>
+  select(Country, `2021`:`2024`) |>
+  pivot_longer(
+    cols      = `2021`:`2024`,
+    names_to  = "Year",
+    values_to = "gdp_pc"
+  ) |>
+  group_by(Country) |>
+  summarise(
+    avg_gdp_pc = mean(gdp_pc, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+    ## Warning: There were 4 warnings in `mutate()`.
+    ## The first warning was:
+    ## ℹ In argument: `across(`2021`:`2024`, as.numeric)`.
+    ## Caused by warning:
+    ## ! NAs introduced by coercion
+    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 3 remaining warnings.
+
+``` r
+# 2. Average GDP growth per country
+
+gdp_growth_avg <- gdp_growth_long_cat |>
+  mutate(Country = trimws(Country)) |>
+  select(Country, avg_growth) |>
+  distinct()
+
+# 3. Join growth + income
+
+growth_vs_income <- gdp_growth_avg |>
+  inner_join(gdp_pc_avg, by = "Country") |>
+  filter(!is.na(avg_gdp_pc), !is.na(avg_growth))
+
+# 4. Highlight 4 focus countries
+
+focus_countries <- c("India", "United States", "Denmark", "South Africa")
+
+growth_vs_income <- growth_vs_income |>
+  mutate(
+    Highlight = if_else(
+      Country %in% focus_countries,
+      "Selected countries",
+      "Other countries"
+    )
+  )
+
+# 5. Scatterplot
+
+growth_income_plot <- growth_vs_income |>
+  ggplot(aes(x = avg_gdp_pc, y = avg_growth, color = Highlight)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkgrey", linewidth = 1) +
+  geom_text_repel(
+    data = subset(growth_vs_income, Country %in% focus_countries),
+    aes(label = Country),
+    size = 3.5,
+    color = "black",
+    box.padding = 0.3,
+    max.overlaps = 20,
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c(
+  "Selected countries" = "#2C6DA4",
+  "Other countries" = "grey80"
+    )
+  ) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title    = "GDP per Capita vs. Average Post-COVID GDP Growth",
+    subtitle = "Average GDP growth vs GDP per capita (2021-2024)",
+    x        = "GDP per capita in USD 2021-2024",
+    y        = "Annual GDP growth 2021-2024 (%)",
+    color    = "",
+    caption = "Source: OECD Data (GDP per capita and GDP growth, 2021-2024)"
+  ) +
+  theme_minimal(base_size = 14)
+
+print(growth_income_plot)
+```
+
+![](memo_files/figure-gfm/plot5-scatterplot-Per-Capita-vs-Growth-1.png)<!-- -->
