@@ -25,15 +25,17 @@ library(geomtextpath) # Provides geom_textpath
 The data for our group project is sourced from the OECD, specifically
 from two sources: “Annual Real GDP Growth - OECD and Non-OECD Countries”
 and “Annual GDP and Consumption Per Capita - OECD and Non-OECD
-Countries.” The first dataset provides annual GDP growth figures for
-OECD member states and selected non-member countries covering the years
-2018-2024, while the second dataset reports GDP and consumption per
-capita over the same period. Together, these datasets allow us to
-analyze how different nations recovered economically following the
-severe disruptions of the COVID-19 pandemic. The selected time frame
-enables us to trace economic trajectories before, during, and after the
-pandemic, helping us understand both the immediate impact and the
-long-term recovery patterns.
+Countries.”
+
+The first dataset provides annual GDP growth figures for OECD member
+states and selected non-member countries covering the years 2018-2024,
+while the second dataset reports GDP and consumption per capita over the
+same period. Together, these datasets allow us to analyze how different
+nations recovered economically following the severe disruptions of the
+COVID-19 pandemic. The selected time frame enables us to trace economic
+trajectories before, during, and after the pandemic, helping us
+understand both the immediate impact and the long-term recovery
+patterns.
 
 After data cleaning, our datasets contained fewer than 750 combined data
 points, with 46 observations and 8 variables in each initial dataset,
@@ -58,18 +60,24 @@ recovery around the world following the COVID-19 pandemic. We aim to
 closely examine the observations in our datasets to identify potential
 patterns (such as geographic or regional trends) that reveal which
 countries recovered quickly and which continued to face significant
-challenges. Some of the questions we hope to explore include:
+challenges.
+
+Some of the questions we hope to explore include:
 
 - Are there identifiable geographic patterns indicating which countries
   were more effective in rebounding economically?
+
 - How much did the average year-on-year GDP growth rates vary across
   countries and regions, and were there any notable outliers?
+
 - What factors might explain why some countries recovered more
   successfully than others? We plan to compare and analyze selected
   countries.
+
 - How can we meaningfully categorize countries into groups such as
   recovering and booming, and what does the global distribution of these
   categories reveal about overall recovery trends?
+
 - Among our four selected economies, which performed best, and what key
   drivers contributed to their relative success?
 
@@ -656,7 +664,7 @@ growth_income_plot <- ggplot(growth_vs_income,
     legend.position  = "right"
   )
 
-print(growth_income_plot)
+growth_income_plot
 ```
 
 <img src="proposal_files/figure-gfm/plot5-scatterplot-Per-Capita-vs-Growth-1.png" alt="Scatterplot comparing average GDP per capita vs. annual GDP growth for 46 countries between 2021 and 2024. Each country is shown as a point, colored by OECD membership. OECD members are mostly clustered toward the right side of the plot with higher GDP per capita and weaker growth rates. Non OECD countries have lower GDP per capita and tend to appear on the left side of the plot with stronger growth rates. India and South Africa are labeled in blue and sit among the non OECD group. The United States and Denmark are labeled in orange within the OECD group. A downward sloping trendline shows that higher income countries experienced slower growth on average. Annotations mark the areas of lower income faster growth and higher income slower growth."  />
