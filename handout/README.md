@@ -1,3 +1,2 @@
-handout.pdf <- [Measuring Post-Covid Economic Recovery Across Nations.pdf](https://github.com/user-attachments/files/23954618/Measuring.Post-Covid.Economic.Recovery.Across.Nations.pdf)
-
+Add your handout to this folder. Call your file handout.pdf or you can change the file name in your Project README.md
 
