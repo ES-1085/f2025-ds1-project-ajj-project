@@ -15,7 +15,7 @@ your project.
 
 ## Handout
 
-Our handout can be found [here](handout/handout.pdf). You can update the filename and extension of your handout, currently it is called handout.pdf
+Our handout can be found [here](handout/https://github.com/user-attachments/assets/56aa97fe-d532-4da2-a91c-91e909651571). You can update the filename and extension of your handout, currently it is called handout.pdf
 
 ## Memo
 
