@@ -14,6 +14,7 @@ library(ggrepel)
 library(gganimate)  
 library(scales)  
 library(geomtextpath) # Provides geom_textpath
+library(countrycode)
 ```
 
 ```{r extra-packages-to-load, message=FALSE}
@@ -521,10 +522,9 @@ growth_income_plot <- ggplot(growth_vs_income,
 growth_income_plot
 ```
 
-#Plot 6 
-```{r region-gdp-distribution, message = False, warning = False, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
-library(countrycode)
-library(tidyverse)
+#Plot 6: Distribution of Post-Pandemic GDP Growth by Region
+
+```{r region-gdp-distribution, message = FALSE, warning = FALSE, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
 
 # Separate it into regions
 df_region <- gdp_growth_avg %>%
