@@ -492,7 +492,7 @@ India, the strongest performer in the plot, sits high on the plot with low GDP p
 
 This plot helps show the broader post pandemic dynamic. Advanced economies recovered steadily but without dramatic acceleration, while several emerging economies grew rapidly as they caught up from earlier downturns and benefited from expanding domestic markets. The visualization highlights this contrast and provides a clear way to compare these economic trajectories across income levels.
 
-#Plot 6 
+### Plot 6 
 ```{r region-gdp-distribution, message = False, warning = False, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
 library(countrycode)
 library(tidyverse)
