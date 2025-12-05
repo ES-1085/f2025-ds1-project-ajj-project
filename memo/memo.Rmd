@@ -491,3 +491,57 @@ This plot compares the average GDP per capita of 46 countries to their average a
 India, the strongest performer in the plot, sits high on the plot with low GDP per capita but very fast growth. South Africa is placed lower, but still fits the pattern of non OECD economies growing more quickly than the wealthier OECD countries to the right. Denmark and the United States are located among the higher income cluster, where growth is solid but much slower than in emerging economies.
 
 This plot helps show the broader post pandemic dynamic. Advanced economies recovered steadily but without dramatic acceleration, while several emerging economies grew rapidly as they caught up from earlier downturns and benefited from expanding domestic markets. The visualization highlights this contrast and provides a clear way to compare these economic trajectories across income levels.
+
+#Plot 6 
+```{r region-gdp-distribution, message = False, warning = False, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
+library(countrycode)
+library(tidyverse)
+
+# Separate it into regions
+df_region <- gdp_growth_avg %>%
+  # Clean country names
+  mutate(Country = str_remove_all(Country, "[·\\u2007]")) %>%
+  mutate(Country = str_trim(Country)) %>%
+  # Create Region column
+  mutate(Region = countrycode(Country, origin = "country.name", destination = "region")) %>%
+  # Manual adjustments for specific World Bank groupings
+  mutate(Region = case_when(
+    Country %in% c("United States", "Canada", "Mexico") ~ "North America",
+    Country %in% c("China (People’s Republic of)", "Japan", "Korea", "Australia", "New Zealand", "Indonesia") ~ "East Asia",
+    Country == "India" ~ "South Asia",
+    Country %in% c("Israel", "Saudi Arabia") ~ "Middle East",
+    Country == "South Africa" ~ "Africa",
+    Country %in% c("Austria", "Belgium", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Netherlands", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Türkiye", "United Kingdom") ~ "Europe",
+    Country %in% c("Chile", "Colombia", "Costa Rica", "Argentina", "Brazil") ~ "South America",
+    TRUE ~ Region
+  )) %>%
+  # THIS LINE REMOVES THE NA REGIONS FROM THE PLOT
+  filter(!is.na(Region)) %>%
+  filter(!is.na(avg_growth))
+
+# Creating the boxplot
+plot6_region_boxplot <- df_region %>%
+  ggplot(aes(x = reorder(Region, avg_growth, FUN = median), y = avg_growth, fill = Region)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 16, outlier.size = 2) +
+  geom_jitter(height = 0, width = 0.2, alpha = 0.4, size = 1.5) +
+  coord_flip() +
+  labs(
+    title = "Distribution of Post-Pandemic GDP Growth (2021-2024)",
+    subtitle = "By Region",
+    x = "Region", 
+    y = "Average GDP Growth (%)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "none",
+    panel.grid.major.y = element_blank()
+  ) +
+  scale_fill_brewer(palette = "Set3")
+
+ggsave("plot6_region_boxplot.png", plot = plot6_region_boxplot, width = 8, height = 5)
+plot6_region_boxplot
+```
+
+#### Description:
+
+This boxplot compares post-pandemic GDP growth across world regions (2021–2024). South Asia shows the strongest growth, led by India at about 8%. The Middle East and South America also have relatively high median growth, while Europe and North America cluster around slower rates of 2–3%. East Asia falls in the middle, and Africa appears lower only because the dataset includes South Africa alone. Overall, emerging regions recovered faster, while advanced economies experienced slower, steadier growth.
