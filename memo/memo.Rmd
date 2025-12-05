@@ -16,6 +16,7 @@ library(dplyr)
 library(ggplot2)
 library(ggrepel)
 library(gifski)
+library(countrycode)
 ```
 
 ## Data Clean Up Steps for Overall Data
@@ -492,10 +493,10 @@ India, the strongest performer in the plot, sits high on the plot with low GDP p
 
 This plot helps show the broader post pandemic dynamic. Advanced economies recovered steadily but without dramatic acceleration, while several emerging economies grew rapidly as they caught up from earlier downturns and benefited from expanding domestic markets. The visualization highlights this contrast and provides a clear way to compare these economic trajectories across income levels.
 
-### Plot 6 
-```{r region-gdp-distribution, message = False, warning = False, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
-library(countrycode)
-library(tidyverse)
+
+#Plot 6: Distribution of Post-Pandemic GDP Growth by Region
+
+```{r region-gdp-distribution, message = FALSE, warning = FALSE, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
 
 # Separate it into regions
 df_region <- gdp_growth_avg %>%
@@ -541,7 +542,3 @@ plot6_region_boxplot <- df_region %>%
 ggsave("plot6_region_boxplot.png", plot = plot6_region_boxplot, width = 8, height = 5)
 plot6_region_boxplot
 ```
-
-#### Description:
-
-This boxplot compares post-pandemic GDP growth across world regions (2021–2024). South Asia shows the strongest growth, led by India at about 8%. The Middle East and South America also have relatively high median growth, while Europe and North America cluster around slower rates of 2–3%. East Asia falls in the middle, and Africa appears lower only because the dataset includes South Africa alone. Overall, emerging regions recovered faster, while advanced economies experienced slower, steadier growth.

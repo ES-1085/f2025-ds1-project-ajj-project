@@ -19,6 +19,7 @@ library(dplyr)
 library(ggplot2)
 library(ggrepel)
 library(gifski)
+library(countrycode)
 ```
 
 ## Data Clean Up Steps for Overall Data
@@ -621,3 +622,53 @@ several emerging economies grew rapidly as they caught up from earlier
 downturns and benefited from expanding domestic markets. The
 visualization highlights this contrast and provides a clear way to
 compare these economic trajectories across income levels.
+
+\#Plot 6: Distribution of Post-Pandemic GDP Growth by Region
+
+``` r
+# Separate it into regions
+df_region <- gdp_growth_avg %>%
+  # Clean country names
+  mutate(Country = str_remove_all(Country, "[·\\u2007]")) %>%
+  mutate(Country = str_trim(Country)) %>%
+  # Create Region column
+  mutate(Region = countrycode(Country, origin = "country.name", destination = "region")) %>%
+  # Manual adjustments for specific World Bank groupings
+  mutate(Region = case_when(
+    Country %in% c("United States", "Canada", "Mexico") ~ "North America",
+    Country %in% c("China (People’s Republic of)", "Japan", "Korea", "Australia", "New Zealand", "Indonesia") ~ "East Asia",
+    Country == "India" ~ "South Asia",
+    Country %in% c("Israel", "Saudi Arabia") ~ "Middle East",
+    Country == "South Africa" ~ "Africa",
+    Country %in% c("Austria", "Belgium", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Netherlands", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Türkiye", "United Kingdom") ~ "Europe",
+    Country %in% c("Chile", "Colombia", "Costa Rica", "Argentina", "Brazil") ~ "South America",
+    TRUE ~ Region
+  )) %>%
+  # THIS LINE REMOVES THE NA REGIONS FROM THE PLOT
+  filter(!is.na(Region)) %>%
+  filter(!is.na(avg_growth))
+
+# Creating the boxplot
+plot6_region_boxplot <- df_region %>%
+  ggplot(aes(x = reorder(Region, avg_growth, FUN = median), y = avg_growth, fill = Region)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 16, outlier.size = 2) +
+  geom_jitter(height = 0, width = 0.2, alpha = 0.4, size = 1.5) +
+  coord_flip() +
+  labs(
+    title = "Distribution of Post-Pandemic GDP Growth (2021-2024)",
+    subtitle = "By Region",
+    x = "Region", 
+    y = "Average GDP Growth (%)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "none",
+    panel.grid.major.y = element_blank()
+  ) +
+  scale_fill_brewer(palette = "Set3")
+
+ggsave("plot6_region_boxplot.png", plot = plot6_region_boxplot, width = 8, height = 5)
+plot6_region_boxplot
+```
+
+<img src="memo_files/figure-gfm/region-gdp-distribution-1.png" alt="Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe &amp; Central Asia show tighter distributions, indicating more stable but moderate recovery."  />
