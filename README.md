@@ -3,7 +3,6 @@ Measuring Post-Covid Economic Recovery Across Nations
 by AJJ
 
 ## Summary
-================
 
 The COVID-19 pandemic caused one of the most severe and synchronized global economic contractions in modern history. Although nearly all countries experienced sharp declines in GDP during 2020, their post-pandemic recoveries were far from uniform. Understanding these differences is important for assessing global economic resilience, identifying which countries rebounded the fastest, and evaluating how factors such as income level, geographic region, and OECD membership shaped recovery trajectories. To study these dynamics, we used two OECD datasets: Annual Real GDP Growth (OECD and Non-OECD Countries) and Annual GDP and Consumption Per Capita, covering 2018–2024. These datasets allowed us to examine economic conditions before, during, and after the pandemic. Our project focuses on four countries: the United States, Denmark, India, and South Africa. Then we used their outcomes to compare both OECD and non-OECD economies and to highlight variation between advanced and emerging economies.
 
