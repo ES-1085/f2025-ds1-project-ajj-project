@@ -97,7 +97,191 @@ gdp_growth_long <- gdp_growth_long %>%
 
 ## Plots
 
-#### Final Plot 1
+#### Final Plot: GDP per Capita vs. Average Post-COVID GDP Growth
+
+``` r
+# Step 1: Categorize countries based on post-pandemic average growth
+gdp_growth_long_cat <- gdp_growth_long %>%
+  filter(Year >= 2021) %>%
+  group_by(`Country`) %>%
+  mutate(
+    avg_growth = mean(GDP_Growth, na.rm = TRUE),
+    Recovery_Category = case_when(
+      avg_growth > 0 & avg_growth <= 3 ~ "Recovering",
+      avg_growth > 3 ~ "Booming",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  ungroup()
+
+# Clean and average GDP per capita, 2021-2024
+
+gdp_pc_avg <- GDP_Per_Capita |>
+  mutate(Country = trimws(Country)) |>
+  mutate(across(`2021`:`2024`, as.numeric)) |>
+  select(Country, `2021`:`2024`) |>
+  pivot_longer(
+    cols      = `2021`:`2024`,
+    names_to  = "Year",
+    values_to = "gdp_pc"
+  ) |>
+  group_by(Country) |>
+  summarise(
+    avg_gdp_pc = mean(gdp_pc, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Average GDP growth per country
+
+gdp_growth_avg <- gdp_growth_long_cat |>
+  mutate(Country = trimws(Country)) |>
+  select(Country, avg_growth) |>
+  distinct()
+
+# Join growth + income
+
+growth_vs_income <- gdp_growth_avg |>
+  inner_join(gdp_pc_avg, by = "Country") |>
+  filter(!is.na(avg_gdp_pc), !is.na(avg_growth))
+
+# OECD Membership and focus countries
+
+oecd_countries <- c(
+  "Australia","Austria","Belgium","Canada","Chile","Colombia","Costa Rica",
+  "Czechia","Denmark","Estonia","Finland","France","Germany","Greece",
+  "Hungary","Iceland","Ireland","Israel","Italy","Japan","Korea",
+  "Latvia","Lithuania","Luxembourg","Mexico","Netherlands","New Zealand",
+  "Norway","Poland","Portugal","Slovak Republic","Slovenia","Spain",
+  "Sweden","Switzerland","Türkiye","United Kingdom","United States"
+)
+
+focus_countries <- c("India", "United States", "Denmark", "South Africa")
+
+growth_vs_income <- growth_vs_income |>
+  mutate(
+    OECD  = if_else(Country %in% oecd_countries,
+                    "OECD member", "Non-OECD"),
+    Focus = Country %in% focus_countries
+  )
+
+# Scatterplot
+
+growth_income_plot <- ggplot(growth_vs_income,
+                             aes(x = avg_gdp_pc, y = avg_growth)) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkgrey", linewidth = 0.7) +
+  geom_point(aes(color = OECD), size = 2.5, alpha = 0.8) +
+  geom_point(
+    data = subset(growth_vs_income, Focus),
+    aes(color = OECD),
+    size = 3.2
+  ) +
+
+ # labels and pointers for focus countries
+  geom_text_repel(
+    data = subset(growth_vs_income, Focus & Country %in% c("India", "United States", "Denmark", "South Africa")),
+    aes(label = Country),
+    size = 3.5,
+    color = "black",
+    box.padding = 0.3,
+    max.overlaps = 20,
+    show.legend = FALSE
+  ) +
+  geom_segment(
+  data = subset(growth_vs_income, Country == "United States"),
+  aes(x = avg_gdp_pc, y = avg_growth,
+      xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
+  linewidth = 0.3, color = "black"
+) +
+  geom_segment(
+  data = subset(growth_vs_income, Country == "Denmark"),
+  aes(x = avg_gdp_pc, y = avg_growth,
+      xend = avg_gdp_pc + 4000, yend = avg_growth - 0.12),
+  linewidth = 0.3, color = "black"
+) +
+  geom_segment(
+  data = subset(growth_vs_income, Country == "India"),
+  aes(x = avg_gdp_pc, y = avg_growth,
+      xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
+  linewidth = 0.3, color = "black"
+) +
+  geom_segment(
+  data = subset(growth_vs_income, Country == "South Africa"),
+  aes(x = avg_gdp_pc, y = avg_growth,
+      xend = avg_gdp_pc + 4000, yend = avg_growth - 0.12),
+  linewidth = 0.3, color = "black"
+) +
+
+  # quadrant annotations
+  annotate(
+    "text",
+    x = 25000, y = 7.8,
+    label = "Lower-income,\nfaster growth",
+    hjust = 0, vjust = 1,
+    size = 3.5,
+    color = "black"
+  ) +
+  annotate(
+    "text",
+    x = 140000, y = 2.6,
+    label = "Higher-income,\nslower growth",
+    hjust = 1, vjust = 0,
+    size = 3.5,
+    color = "black"
+  ) +
+
+  scale_color_manual(
+    values = c(
+      "OECD member" = "#E69F00",   # orange
+      "Non-OECD"    = "#1F78B4"    # blue
+    )
+  ) +
+  scale_x_continuous(labels = comma) +
+
+  labs(
+    title    = "GDP per Capita vs. Average GDP Growth 2021-2024",
+    subtitle = "Higher-income (mostly OECD) economies grew more slowly after Covid,\nwhile lower-income countries grew faster.",
+    x        = "GDP per capita in USD",
+    y        = "Annual GDP growth 2021-2024 (%)",
+    color    = "OECD status",
+    caption  = "Source: OECD Data (GDP per capita and GDP growth, 2021-2024)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.major = element_line(color = "grey85"),
+    panel.grid.minor = element_blank(),
+    legend.position  = "right"
+  )
+
+growth_income_plot
+```
+
+<img src="memo_files/figure-gfm/final-plot-1.png" alt="Scatterplot comparing average GDP per capita vs. annual GDP growth for 46 countries between 2021 and 2024. Each country is shown as a point, colored by OECD membership. OECD members are mostly clustered toward the right side of the plot with higher GDP per capita and weaker growth rates. Non OECD countries have lower GDP per capita and tend to appear on the left side of the plot with stronger growth rates. India and South Africa are labeled in blue and sit among the non OECD group. The United States and Denmark are labeled in orange within the OECD group. A downward sloping trendline shows that higher income countries experienced slower growth on average. Annotations mark the areas of lower income faster growth and higher income slower growth."  />
+
+#### Description:
+
+This plot compares the average GDP per capita of 46 countries to their
+average annual GDP growth from 2021 to 2024. Each point represents one
+country, with colors distinguishing OECD members from non members. A
+clear pattern emerges across the scatter. Countries with higher GDP per
+capita, which are mostly OECD members, experienced noticeably weaker
+economic growth in the post COVID period. In comparison, lower income
+economies, which are mostly non OECD members, saw stronger and more
+rapid growth. The negative slope of the trendline displays this
+relationship.
+
+India, the strongest performer in the plot, sits high on the plot with
+low GDP per capita but very fast growth. South Africa is placed lower,
+but still fits the pattern of non OECD economies growing more quickly
+than the wealthier OECD countries to the right. Denmark and the United
+States are located among the higher income cluster, where growth is
+solid but much slower than in emerging economies.
+
+This plot helps show the broader post pandemic dynamic. Advanced
+economies recovered steadily but without dramatic acceleration, while
+several emerging economies grew rapidly as they caught up from earlier
+downturns and benefited from expanding domestic markets. The
+visualization highlights this contrast and provides a clear way to
+compare these economic trajectories across income levels.
 
 ### Plot 1: GDP Growth Trends Over Time by Country
 
@@ -127,15 +311,7 @@ plot1_gdp_trends <- gdp_growth_long %>%
   scale_color_viridis_d() +
     ylim(-10, NA) +
     annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5)
-```
 
-    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-    ## ℹ Please use `linewidth` instead.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-``` r
 ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
 plot1_gdp_trends
 ```
@@ -442,188 +618,7 @@ also the timing and steepness of each country’s trajectory. This dynamic
 presentation makes it easier to see how the shock of 2020 unfolded and
 how different economies diverged in the years that followed.
 
-### Plot 5: GDP per Capita vs. Average Post-COVID GDP Growth
-
-``` r
-# Clean and average GDP per capita, 2021-2024
-
-gdp_pc_avg <- GDP_Per_Capita |>
-  mutate(Country = trimws(Country)) |>
-  mutate(across(`2021`:`2024`, as.numeric)) |>
-  select(Country, `2021`:`2024`) |>
-  pivot_longer(
-    cols      = `2021`:`2024`,
-    names_to  = "Year",
-    values_to = "gdp_pc"
-  ) |>
-  group_by(Country) |>
-  summarise(
-    avg_gdp_pc = mean(gdp_pc, na.rm = TRUE),
-    .groups = "drop"
-  )
-```
-
-    ## Warning: There were 4 warnings in `mutate()`.
-    ## The first warning was:
-    ## ℹ In argument: `across(`2021`:`2024`, as.numeric)`.
-    ## Caused by warning:
-    ## ! NAs introduced by coercion
-    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 3 remaining warnings.
-
-``` r
-# Average GDP growth per country
-
-gdp_growth_avg <- gdp_growth_long_cat |>
-  mutate(Country = trimws(Country)) |>
-  select(Country, avg_growth) |>
-  distinct()
-
-# Join growth + income
-
-growth_vs_income <- gdp_growth_avg |>
-  inner_join(gdp_pc_avg, by = "Country") |>
-  filter(!is.na(avg_gdp_pc), !is.na(avg_growth))
-
-# OECD Membership and focus countries
-
-oecd_countries <- c(
-  "Australia","Austria","Belgium","Canada","Chile","Colombia","Costa Rica",
-  "Czechia","Denmark","Estonia","Finland","France","Germany","Greece",
-  "Hungary","Iceland","Ireland","Israel","Italy","Japan","Korea",
-  "Latvia","Lithuania","Luxembourg","Mexico","Netherlands","New Zealand",
-  "Norway","Poland","Portugal","Slovak Republic","Slovenia","Spain",
-  "Sweden","Switzerland","Türkiye","United Kingdom","United States"
-)
-
-focus_countries <- c("India", "United States", "Denmark", "South Africa")
-
-growth_vs_income <- growth_vs_income |>
-  mutate(
-    OECD  = if_else(Country %in% oecd_countries,
-                    "OECD member", "Non-OECD"),
-    Focus = Country %in% focus_countries
-  )
-
-# Scatterplot
-
-growth_income_plot <- ggplot(growth_vs_income,
-                             aes(x = avg_gdp_pc, y = avg_growth)) +
-  geom_smooth(method = "lm", se = FALSE, color = "darkgrey", linewidth = 0.7) +
-  geom_point(aes(color = OECD), size = 2.5, alpha = 0.8) +
-  geom_point(
-    data = subset(growth_vs_income, Focus),
-    aes(color = OECD),
-    size = 3.2
-  ) +
-
- # labels and pointers for focus countries
-  geom_text_repel(
-    data = subset(growth_vs_income, Focus & Country %in% c("India", "United States", "Denmark", "South Africa")),
-    aes(label = Country),
-    size = 3.5,
-    color = "black",
-    box.padding = 0.3,
-    max.overlaps = 20,
-    show.legend = FALSE
-  ) +
-  geom_segment(
-  data = subset(growth_vs_income, Country == "United States"),
-  aes(x = avg_gdp_pc, y = avg_growth,
-      xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
-  linewidth = 0.3, color = "black"
-) +
-  geom_segment(
-  data = subset(growth_vs_income, Country == "Denmark"),
-  aes(x = avg_gdp_pc, y = avg_growth,
-      xend = avg_gdp_pc + 4000, yend = avg_growth - 0.12),
-  linewidth = 0.3, color = "black"
-) +
-  geom_segment(
-  data = subset(growth_vs_income, Country == "India"),
-  aes(x = avg_gdp_pc, y = avg_growth,
-      xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
-  linewidth = 0.3, color = "black"
-) +
-  geom_segment(
-  data = subset(growth_vs_income, Country == "South Africa"),
-  aes(x = avg_gdp_pc, y = avg_growth,
-      xend = avg_gdp_pc + 4000, yend = avg_growth - 0.12),
-  linewidth = 0.3, color = "black"
-) +
-
-  # quadrant annotations
-  annotate(
-    "text",
-    x = 25000, y = 7.8,
-    label = "Lower-income,\nfaster growth",
-    hjust = 0, vjust = 1,
-    size = 3.5,
-    color = "black"
-  ) +
-  annotate(
-    "text",
-    x = 140000, y = 2.6,
-    label = "Higher-income,\nslower growth",
-    hjust = 1, vjust = 0,
-    size = 3.5,
-    color = "black"
-  ) +
-
-  scale_color_manual(
-    values = c(
-      "OECD member" = "#E69F00",   # orange
-      "Non-OECD"    = "#1F78B4"    # blue
-    )
-  ) +
-  scale_x_continuous(labels = comma) +
-
-  labs(
-    title    = "GDP per Capita vs. Average GDP Growth 2021-2024",
-    subtitle = "Higher-income (mostly OECD) economies grew more slowly after Covid,\nwhile lower-income countries grew faster.",
-    x        = "GDP per capita in USD",
-    y        = "Annual GDP growth 2021-2024 (%)",
-    color    = "OECD status",
-    caption  = "Source: OECD Data (GDP per capita and GDP growth, 2021-2024)"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.grid.major = element_line(color = "grey85"),
-    panel.grid.minor = element_blank(),
-    legend.position  = "right"
-  )
-
-print(growth_income_plot)
-```
-
-<img src="memo_files/figure-gfm/plot5-scatterplot-Per-Capita-vs-Growth-1.png" alt="Scatterplot comparing average GDP per capita vs. annual GDP growth for 46 countries between 2021 and 2024. Each country is shown as a point, colored by OECD membership. OECD members are mostly clustered toward the right side of the plot with higher GDP per capita and weaker growth rates. Non OECD countries have lower GDP per capita and tend to appear on the left side of the plot with stronger growth rates. India and South Africa are labeled in blue and sit among the non OECD group. The United States and Denmark are labeled in orange within the OECD group. A downward sloping trendline shows that higher income countries experienced slower growth on average. Annotations mark the areas of lower income faster growth and higher income slower growth."  />
-
-#### Description:
-
-This plot compares the average GDP per capita of 46 countries to their
-average annual GDP growth from 2021 to 2024. Each point represents one
-country, with colors distinguishing OECD members from non members. A
-clear pattern emerges across the scatter. Countries with higher GDP per
-capita, which are mostly OECD members, experienced noticeably weaker
-economic growth in the post COVID period. In comparison, lower income
-economies, which are mostly non OECD members, saw stronger and more
-rapid growth. The negative slope of the trendline displays this
-relationship.
-
-India, the strongest performer in the plot, sits high on the plot with
-low GDP per capita but very fast growth. South Africa is placed lower,
-but still fits the pattern of non OECD economies growing more quickly
-than the wealthier OECD countries to the right. Denmark and the United
-States are located among the higher income cluster, where growth is
-solid but much slower than in emerging economies.
-
-This plot helps show the broader post pandemic dynamic. Advanced
-economies recovered steadily but without dramatic acceleration, while
-several emerging economies grew rapidly as they caught up from earlier
-downturns and benefited from expanding domestic markets. The
-visualization highlights this contrast and provides a clear way to
-compare these economic trajectories across income levels.
-
-\#Plot 6: Distribution of Post-Pandemic GDP Growth by Region
+\#Plot 5: Distribution of Post-Pandemic GDP Growth by Region
 
 ``` r
 # Separate it into regions
