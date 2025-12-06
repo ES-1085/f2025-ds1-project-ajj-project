@@ -1,6 +1,6 @@
 Measuring Post-Covid Economic Recovery Across Nations
 ================
-by AJJ
+by Armin Sumansky, Jiwon Lee, and Jamari Robinson
 
 ## Summary
 
