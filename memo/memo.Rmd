@@ -501,7 +501,7 @@ Additionally, the noticeable uptick in Denmark’s 2024 growth reflects the extr
 The animation helps reveal not just the magnitude of growth changes, but also the timing and steepness of each country’s trajectory. This dynamic presentation makes it easier to see how the shock of 2020 unfolded and how different economies diverged in the years that followed.
 
 
-### Plot 5: Distribution of Post-Pandemic GDP Growth by Region
+#Plot 5: Distribution of Post-Pandemic GDP Growth by Region
 
 ```{r region-gdp-distribution, message = FALSE, warning = FALSE, fig.alt = "Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe & Central Asia show tighter distributions, indicating more stable but moderate recovery."}
 
