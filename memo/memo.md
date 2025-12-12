@@ -2,12 +2,6 @@ Project memo
 ================
 AJJ
 
-This document should contain a detailed account of the data clean up for
-your data and the design choices you are making for your plots. For
-instance you will want to document choices you’ve made that were
-intentional for your graphic, e.g. color you’ve chosen for the plot.
-Think of this document as a code script someone can follow to reproduce
-the data cleaning steps and graphics in your handout.
 
 ``` r
 library(tidyverse)
