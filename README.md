@@ -37,14 +37,19 @@ A link to the code and how we created our graphics in our memo can be found [her
 
 ## Data
 
-“Quarterly Real GDP Growth - OECD Countries.” OECD Data Explorer, data-explorer.oecd.org/vis?df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_NAMAIN1%2540DF_QNA_EXPENDITURE_GROWTH_OECD&df%5Bag%5D=OECD.SDD.NAD&df%5Bvs%5D=1.1&dq=Q.....B1GQ......G1.&ly%5Bcl%5D=TIME_PERIOD&ly%5Brw%5D=REF_AREA&to%5BTIME_PERIOD%5D=false&lo=30&lom=LASTNPERIODS&vw=ov&lc=en&pg=0. Accessed 24 Oct. 2025. 
-
-Include a citation for your data here. See
-<http://libraryguides.vu.edu.au/c.php?g=386501&p=4347840> for guidance
-on proper citation for datasets. If you got your data off the web, make
-sure to note the retrieval date.
+OECD. 2025. Quarterly Real GDP Growth – OECD Countries. OECD Data Explorer. Accessed October 24, 2025. https://data-explorer.oecd.org/vis?df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_NAMAIN1%2540DF_QNA_EXPENDITURE_GROWTH_OECD&df%5Bag%5D=OECD.SDD.NAD&df%5Bvs%5D=1.1&dq=Q.....B1GQ......G1.&ly%5Bcl%5D=TIME_PERIOD&ly%5Brw%5D=REF_AREA&to%5BTIME_PERIOD%5D=false&lo=30&lom=LASTNPERIODS&vw=ov&lc=en&pg=0
 
 ## References
 
-List any references here. You should, at a minimum, list your data
-source.
+OECD. 2025. Quarterly Real GDP Growth – OECD Countries. OECD Data Explorer. Accessed October 24, 2025.
+https://data-explorer.oecd.org/vis?df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_NAMAIN1%2540DF_QNA_EXPENDITURE_GROWTH_OECD&df%5Bag%5D=OECD.SDD.NAD&df%5Bvs%5D=1.1&dq=Q.....B1GQ......G1.&ly%5Bcl%5D=TIME_PERIOD&ly%5Brw%5D=REF_AREA&to%5BTIME_PERIOD%5D=false&lo=30&lom=LASTNPERIODS&vw=ov&lc=en&pg=0
+
+Gagnon, J. E., S. Kamin, and J. Kearns. 2023. “The Impact of the COVID-19 Pandemic on Global GDP Growth.” PMC (National Institutes of Health). https://pmc.ncbi.nlm.nih.gov/articles/PMC10030258/
+ (accessed 2025).
+
+Visual Capitalist. 2025. “Visualized: Post-Pandemic GDP Growth Recovery, by Region.” Visual Capitalist, May 8, 2025. https://www.visualcapitalist.com/visualized-post-pandemic-gdp-growth-recovery-by-region/
+ (accessed 2025). 
+Visual Capitalist
+
+Our World in Data. Real GDP Growth dataset. Global Change Data Lab. https://ourworldindata.org/grapher/real-gdp-growth
+ (accessed 2025). 
