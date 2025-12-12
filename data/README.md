@@ -1,7 +1,5 @@
 # Data
 
-Data files placed in this in this folder. 
-
 This project analyzes global economic recovery patterns from 2018 to 2024, focusing on how different countries rebounded following the COVID-19 pandemic. The primary goal is to evaluate variations in GDP growth and GDP per capita across OECD and non-OECD nations and to visualize how economic resilience differs by income level and region.
 
 ## GDP Growth (Annual, 2018–2024)
