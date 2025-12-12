@@ -322,7 +322,9 @@ plot1_gdp_trends <- gdp_growth_long %>%
   filter(`Country` %in% focus_countries) %>%
   ggplot(aes(x = Year, y = GDP_Growth, color = `Country`, group = `Country`)) +
   geom_line(size = 1.2) +
+  
   geom_point(size = 2) +
+  
   labs(
     title = "GDP Growth Trends (2018–2024)",
     subtitle = "Tracking Pre-, During-, and Post-COVID Economic Growth",
@@ -331,10 +333,15 @@ plot1_gdp_trends <- gdp_growth_long %>%
     color = "Country",
     caption = "Source: OECD Data (Annual Real GDP Growth, 2018–2024)"
   ) +
+  
   theme_minimal(base_size = 13) +
+  
   theme(legend.position = "bottom") + 
+  
   scale_color_viridis_d() +
+  
     ylim(-10, NA) +
+  
     annotate("text", x = 2020, y = -7, label = "COVID Outbreak", color = "black", size = 4, vjust = 1.5)
 ```
 
@@ -346,6 +353,7 @@ plot1_gdp_trends <- gdp_growth_long %>%
 
 ``` r
 ggsave("plot1_gdp_trends.png", plot = plot1_gdp_trends, width = 7, height = 5)
+
 plot1_gdp_trends
 ```
 
@@ -363,17 +371,22 @@ post_pandemic_growth <- gdp_growth_long %>%
 plot2_post_pandemic <- post_pandemic_growth %>%
   slice_max(avg_growth_post_pandemic, n = 15) %>%
   ggplot(aes(x = reorder(`Country`, avg_growth_post_pandemic), y = avg_growth_post_pandemic)) +
+  
   geom_col(fill = "#0072B2") +
+  
   coord_flip() +
+  
   labs(
     title = "Top 15 Countries by GDP Growth (2021–2024)",
     subtitle = "Post-COVID Economic Recovery Strength",
     x = "Country",
     y = "GDP Growth (%)",
   ) +
+  
   theme_minimal(base_size = 13)
 
 ggsave("plot2_post_pandemic.png", plot = plot2_post_pandemic, width = 7, height = 5)
+
 plot2_post_pandemic
 ```
 
@@ -382,6 +395,7 @@ plot2_post_pandemic
 
 ``` r
 # Step 1: Categorize countries based on post-pandemic average growth
+
 gdp_growth_long_cat <- gdp_growth_long %>%
   filter(Year >= 2021) %>%
   group_by(`Country`) %>%
@@ -414,11 +428,14 @@ plot3_box <- gdp_growth_long_cat %>%
     "Booming" = "#2ECC71"
   )) +
   theme_minimal(base_size = 13) +
+  
   theme(legend.position = "none") +
+  
   scale_fill_viridis_d()
 
 # Step 4: Save and display plot
 ggsave("plot3_box.png", plot = plot3_box, width = 5, height = 4)
+
 plot3_box
 ```
 
@@ -500,8 +517,10 @@ plot_region_covid <- gdp_region %>%
     y = "GDP Growth (%)",
     color = "Region / Highlighted Countries"
   ) +
+  
   theme_minimal(base_size = 16) +
   theme(legend.position = "bottom") +
+  
   transition_reveal(Year)
 
 # Animate
@@ -599,24 +618,28 @@ growth_income_plot <- ggplot(growth_vs_income,
     max.overlaps = 20,
     show.legend = FALSE
   ) +
+  
   geom_segment(
   data = subset(growth_vs_income, Country == "United States"),
   aes(x = avg_gdp_pc, y = avg_growth,
       xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
   linewidth = 0.3, color = "black"
 ) +
+  
   geom_segment(
   data = subset(growth_vs_income, Country == "Denmark"),
   aes(x = avg_gdp_pc, y = avg_growth,
       xend = avg_gdp_pc + 4000, yend = avg_growth - 0.12),
   linewidth = 0.3, color = "black"
 ) +
+  
   geom_segment(
   data = subset(growth_vs_income, Country == "India"),
   aes(x = avg_gdp_pc, y = avg_growth,
       xend = avg_gdp_pc + 4000, yend = avg_growth + 0.12),
   linewidth = 0.3, color = "black"
 ) +
+  
   geom_segment(
   data = subset(growth_vs_income, Country == "South Africa"),
   aes(x = avg_gdp_pc, y = avg_growth,
@@ -633,6 +656,7 @@ growth_income_plot <- ggplot(growth_vs_income,
     size = 3.5,
     color = "black"
   ) +
+  
   annotate(
     "text",
     x = 140000, y = 2.6,
@@ -648,6 +672,7 @@ growth_income_plot <- ggplot(growth_vs_income,
       "Non-OECD"    = "#1F78B4"    # blue
     )
   ) +
+  
   scale_x_continuous(labels = comma) +
 
   labs(
@@ -675,12 +700,18 @@ growth_income_plot
 ``` r
 # Separate it into regions
 df_region <- gdp_growth_avg %>%
+  
   # Clean country names
+  
   mutate(Country = str_remove_all(Country, "[·\\u2007]")) %>%
   mutate(Country = str_trim(Country)) %>%
+  
   # Create Region column
+  
   mutate(Region = countrycode(Country, origin = "country.name", destination = "region")) %>%
+  
   # Manual adjustments for specific World Bank groupings
+  
   mutate(Region = case_when(
     Country %in% c("United States", "Canada", "Mexico") ~ "North America",
     Country %in% c("China (People’s Republic of)", "Japan", "Korea", "Australia", "New Zealand", "Indonesia") ~ "East Asia",
@@ -691,30 +722,36 @@ df_region <- gdp_growth_avg %>%
     Country %in% c("Chile", "Colombia", "Costa Rica", "Argentina", "Brazil") ~ "South America",
     TRUE ~ Region
   )) %>%
-  # THIS LINE REMOVES THE NA REGIONS FROM THE PLOT
+  
+  # This line removes the N/A from the plot
   filter(!is.na(Region)) %>%
   filter(!is.na(avg_growth))
 
 # Creating the boxplot
+
 plot6_region_boxplot <- df_region %>%
   ggplot(aes(x = reorder(Region, avg_growth, FUN = median), y = avg_growth, fill = Region)) +
   geom_boxplot(alpha = 0.7, outlier.shape = 16, outlier.size = 2) +
   geom_jitter(height = 0, width = 0.2, alpha = 0.4, size = 1.5) +
   coord_flip() +
+  
   labs(
     title = "Distribution of Post-Pandemic GDP Growth (2021-2024)",
     subtitle = "By Region",
     x = "Region", 
     y = "Average GDP Growth (%)"
   ) +
+  
   theme_minimal(base_size = 13) +
   theme(
     legend.position = "none",
     panel.grid.major.y = element_blank()
   ) +
+  
   scale_fill_brewer(palette = "Set3")
 
 ggsave("plot6_region_boxplot.png", plot = plot6_region_boxplot, width = 8, height = 5)
+
 plot6_region_boxplot
 ```
 
