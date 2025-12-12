@@ -526,11 +526,44 @@ plot6_region_boxplot
 
 <img src="memo_files/figure-gfm/region-gdp-distribution-1.png" alt="Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe &amp; Central Asia show tighter distributions, indicating more stable but moderate recovery."  />
 
-#### Additional information and description for each plot:\*\*
+### Methods:
 
-For step 2, the dataset originally had years (2018–2024) as columns,
-which makes it wide. pivot_longer() converts it into a tidy long format
-with Year and GDP_Growth columns, making it easier to plot over time.
+This project analyzes post-COVID economic recovery using three datasets:
+annual real GDP growth for OECD and non-OECD countries, annual GDP per
+capita from 2010–2024, and a dataset containing pre and post-pandemic
+GDP values. These datasets were collected from reputable public sources
+including the OECD Data Explorer, Our World in Data, and peer reviewed
+economic research.
+
+After importing the data, minor formatting issues were resolved by
+stripping non-data symbols from country labels and converting all year
+columns into numeric values. The GDP growth dataset was reshaped into
+long format using `pivot_longer()`, allowing for multiyear comparisons
+and time-series visualizations. Missing numeric values were standardized
+by replacing them with zeros where appropriate.
+
+To differentiate economic contexts, each country was classified as
+either OECD or non-OECD using the countrycode package. A measure of
+post-pandemic recovery was constructed using each country’s average GDP
+growth from 2021–2024, a period chosen to capture the rebound after the
+initial shock. These averages were used to categorize countries into
+three groups: booming (strong recovery), recovering (moderate recovery),
+and struggling (weak or negative recovery). GDP per capita data were
+similarly reshaped to analyze trends in income-adjusted economic
+well-being. All visualizations were created in R using`ggplot2`, with
+careful attention to consistency in color, labeling, and scale choices.
+File paths were managed using the here package to ensure
+reproducibility.
+
+Moreover, for step 2, the dataset originally had years (2018–2024) as
+columns, which makes it wide. `pivot_longer()` converts it into a tidy
+long format with Year and GDP_Growth columns, making it easier to plot
+over time. Next, on step 3, it calculates each country’s average GDP
+growth from 2021–2024 to summarize its overall post-pandemic recovery.
+Using these averages, we classify countries into recovery groups (e.g.,
+“Recovering” or “Booming”). This categorization helps simplify
+year-to-year volatility and makes it easier to compare how quickly
+different economies rebounded after COVID-19.
 
 #### Final plot Description:
 
@@ -691,3 +724,44 @@ The animation helps reveal not just the magnitude of growth changes, but
 also the timing and steepness of each country’s trajectory. This dynamic
 presentation makes it easier to see how the shock of 2020 unfolded and
 how different economies diverged in the years that followed.
+
+#### Analysis:
+
+GDP trends since 2010 reveal a steep global decline around 2020 followed
+by a highly uneven recovery. Most countries rebounded beginning in 2021,
+but the pace and trajectory of recovery varied widely. OECD economies
+exhibited more stable and moderate growth patterns, while non-OECD
+economies showed greater volatility where some achieved rapid growth and
+others remained below pre-pandemic trends.
+
+The 2024 recovery plot highlights which countries are currently growing
+the fastest and how this performance relates to their multiyear
+averages. Countries classified as booming, including several large
+emerging economies, appear in the upper right quadrant with both high
+current growth and strong post-pandemic averages. Recovering countries
+show modest positive growth, indicating steady but slower progress.
+Meanwhile, struggling countries tend to have weak 2024 performance and
+negative or near-zero averages, suggesting incomplete recovery or
+structural challenges.
+
+Comparing OECD and non-OECD groups shows clear differences. The boxplot
+of 2021–2024 growth reveals that non-OECD countries have a wider
+distribution with higher peaks but also more variability. OECD
+countries’ growth tends to be more stable but less extreme. This
+suggests that emerging economies experienced sharper rebounds from the
+pandemic downturn, while wealthier countries maintained steadier, more
+predictable growth paths.
+
+GDP per capita trends offer additional insight. Even when non-OECD
+countries show high growth, their income levels remain well below OECD
+averages. In contrast, OECD economies exhibit slower growth but maintain
+substantially higher per-capita income. This reinforces that rapid GDP
+growth does not necessarily reflect similar improvements in living
+standards.
+
+These findings address the central research questions: “Which countries
+recovered the fastest after COVID-19?” and “How do GDP growth and GDP
+per capita relate during the recovery period?” The results show that
+while several non-OECD countries posted strong growth rates,
+higher-income OECD countries maintained more stable and higher living
+standards, illustrating two different dimensions of recovery.
