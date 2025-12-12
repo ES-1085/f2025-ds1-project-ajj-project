@@ -65,10 +65,6 @@ GDP_Per_Capita <- GDP_Per_Capita %>%
   select(-2)
 ```
 
-Description: The dataset originally had years (2018–2024) as columns,
-which makes it wide. pivot_longer() converts it into a tidy long format
-with Year and GDP_Growth columns, making it easier to plot over time.
-
 ### Step 3: Categorize Countries by Post Pandemic Growth
 
 ``` r
@@ -78,8 +74,6 @@ post_pandemic_growth <- gdp_growth_long %>%
   summarize(avg_growth_post_pandemic = mean(GDP_Growth, na.rm = TRUE)) %>%
   arrange(desc(avg_growth_post_pandemic))
 ```
-
-Description:
 
 ### Step 4: Clean Non-OECD Countries from Filtered Data
 
@@ -260,32 +254,6 @@ growth_income_plot
 
 <img src="memo_files/figure-gfm/final-plot-1.png" alt="Scatterplot comparing average GDP per capita vs. annual GDP growth for 46 countries between 2021 and 2024. Each country is shown as a point, colored by OECD membership. OECD members are mostly clustered toward the right side of the plot with higher GDP per capita and weaker growth rates. Non OECD countries have lower GDP per capita and tend to appear on the left side of the plot with stronger growth rates. India and South Africa are labeled in blue and sit among the non OECD group. The United States and Denmark are labeled in orange within the OECD group. A downward sloping trendline shows that higher income countries experienced slower growth on average. Annotations mark the areas of lower income faster growth and higher income slower growth."  />
 
-#### Description:
-
-This plot compares the average GDP per capita of 46 countries to their
-average annual GDP growth from 2021 to 2024. Each point represents one
-country, with colors distinguishing OECD members from non members. A
-clear pattern emerges across the scatter. Countries with higher GDP per
-capita, which are mostly OECD members, experienced noticeably weaker
-economic growth in the post COVID period. In comparison, lower income
-economies, which are mostly non OECD members, saw stronger and more
-rapid growth. The negative slope of the trendline displays this
-relationship.
-
-India, the strongest performer in the plot, sits high on the plot with
-low GDP per capita but very fast growth. South Africa is placed lower,
-but still fits the pattern of non OECD economies growing more quickly
-than the wealthier OECD countries to the right. Denmark and the United
-States are located among the higher income cluster, where growth is
-solid but much slower than in emerging economies.
-
-This plot helps show the broader post pandemic dynamic. Advanced
-economies recovered steadily but without dramatic acceleration, while
-several emerging economies grew rapidly as they caught up from earlier
-downturns and benefited from expanding domestic markets. The
-visualization highlights this contrast and provides a clear way to
-compare these economic trajectories across income levels.
-
 ### Plot 1: GDP Growth Trends Over Time by Country
 
 #### Data cleanup steps specific to plot 1
@@ -322,38 +290,6 @@ plot1_gdp_trends
 
 <img src="memo_files/figure-gfm/growth-over-time-1.png" alt="Line chart showing GDP growth for Denmark, India, South Africa, and the United States from 2018-2024. All countries have positive growth before 2020, fall sharply in 2020, then recover in 2021. India rebounds the most, nearing 10%, while the others return to low positive growth through 2024."  />
 
-#### Description:
-
-This line plot tracks GDP growth for Denmark, India, South Africa, and
-the United States from 2018 to 2024, allowing for a comparison of
-economic performance before, during, and after the COVID-19 pandemic.
-The plot highlights the collapse in growth for all four countries in
-2020, followed by their rebound in 2021 and the more moderate variations
-that follow through 2024.
-
-The goal of this visualization is not only to measure post-COVID
-recovery but also to show the broader economic trajectory each country
-has taken across three phases: pre-pandemic stability, the sharp
-contraction in 2020, and the uneven recovery that followed. The four
-countries were chosen deliberately to represent different continents and
-to contrast two OECD members (Denmark and the United States) with two
-non-OECD economies (India and South Africa).
-
-A few broader patterns stand out. India shows the most dramatic swings,
-with the steepest decline during the pandemic and the strongest rebound
-immediately afterward. This reflects a common pattern among fast-growing
-emerging economies, which tend to expand rapidly in good years but also
-contract more sharply during global shocks. In contrast, the United
-States and Denmark display more moderate movements around the baseline,
-characteristic of advanced economies with steadier long-term growth
-dynamics. South Africa sits between these extremes, with a slower
-recovery and more modest post-2021 growth.
-
-Taken together, our plot shows how different country’s economic
-structures shape their vulnerability and resilience. High-growth
-emerging economies like India experience far more volatility, while more
-advanced OECD economies drop and recover more gradually.
-
 ### Plot 2: Average GDP Growth by Category
 
 ``` r
@@ -383,33 +319,6 @@ plot2_post_pandemic
 ```
 
 <img src="memo_files/figure-gfm/avg-post-pandemic-growth-1.png" alt="Bar chart showing the top 15 countries by average GDP growth from 2021 to 2024. Bars run horizontally with countries on the y-axis and GDP growth on the x-axis. India has the highest average growth at about 8%, followed by Türkiye, Ireland, and China near 6%, with the remaining countries showing growth between roughly 4% and 5%."  />
-
-#### Description:
-
-This bar plot displays the top fifteen countries by average annual GDP
-growth over the period from 2021 to 2024. The values shown represent the
-mean growth rate across these four post-pandemic years. This helps
-smooth out year-to-year swings and gives a clearer sense of each
-country’s overall recovery strength.
-
-India stands out clearly as the strongest performer in the dataset, with
-average annual growth close to 8 percent. Türkiye, Ireland, and China
-follow, each with averages near or slightly above 6 percent. The
-remaining countries decline gradually down the ranking, but all still
-exhibit relatively solid performance compared with the broader dataset.
-Because this plot only shows the fifteen best-performing nations, even
-the countries at the bottom of this list grew faster on average than
-roughly thirty other countries not included in the chart.
-
-A broader pattern is visible as well. Many of the economies near the top
-of the ranking are either large emerging markets or countries that
-experienced strong post-COVID rebounds driven by domestic demand,
-targeted sector expansion, or favorable structural trends. Countries
-further down the list are often smaller advanced economies whose growth
-rates tend to be steadier and more moderate. Taken together, the plot
-highlights how uneven the post-pandemic recovery has been across the
-world, with some nations surging ahead while others regained momentum at
-a slower pace.
 
 ### Plot 3: GDP Growth Distribution by Recovery Category (2021-2024)
 
@@ -461,36 +370,6 @@ plot3_box
 ```
 
 <img src="memo_files/figure-gfm/growth-distribution-by-recovery-1.png" alt="Box plot comparing GDP growth distribution for two recovery categories from 2021 to 2024. The x-axis shows “Booming” and “Recovering,” and the y-axis shows GDP growth in percent. The “Booming” group has higher median growth and a wider range of values, including an upper outlier, while the “Recovering” group shows lower median growth and a narrower spread."  />
-
-#### Description:
-
-The boxplot compares GDP growth distributions for the two recovery
-categories, Booming and Recovering, over the period from 2021 to 2024.
-Most countries in the dataset fall into the Booming category, which
-shows that a large share of both OECD and non-OECD economies experienced
-average annual growth above 3 percent during the post-COVID recovery.
-The Recovering category has fewer countries and shows a noticeably lower
-median rate of growth.
-
-Initially, we wanted to add a category named “stagnating” but we decided
-against doing so, as no single country in our datasets had average
-growth in negative levels during the selected time period, which would
-have classified them as stagnating.
-
-The Booming group has a wider range of values and includes one clear
-outlier at the top, which represents Ireland’s unusually high
-post-pandemic growth. The Recovering group is more tightly clustered,
-with values concentrated closer to zero.
-
-A broader pattern also emerges from the distribution. Many advanced
-economies, such as Germany, Austria, Finland, and the Netherlands, show
-slower growth and therefore appear more often in the Recovering
-category. This reflects typical features of mature, high-income
-economies, which tend to expand at a steadier and slower pace. In
-contrast, several emerging and developing economies in Asia and Africa
-experienced rapid post-COVID rebounds driven by rising domestic demand,
-expanding labor markets, and catch-up growth. These types of countries
-tend to be in the Booming category.
 
 ### Plot 4: GDP Growth Animation
 
@@ -585,51 +464,6 @@ animate(
 )
 ```
 
-#### Description:
-
-The animated line plot illustrates how GDP growth evolved across world
-regions from 2018 to 2024, with a particular emphasis on the impact of
-the COVID-19 recession in 2020 and the recovery that followed. Each
-country in the dataset is shown as a faint grey line, allowing the
-broader regional distribution to remain visible in the background. Four
-countries: India, the United States, Denmark, and South Africa, are
-highlighted in distinct colors so their trajectories can be compared
-more easily.
-
-As the animation progresses year by year, the viewer can follow how
-growth levels change over time. All countries move sharply downward in
-2020, which is marked by a red-shaded band to visually identify the
-COVID downturn. After this low point, most economies rebound in 2021,
-but the extent of the recovery differs substantially. India stands out
-as the strongest performer, climbing dramatically above the others in
-the immediate post-Covid period. The remaining highlighted countries
-recover more moderately, with South Africa and Denmark following slower,
-flatter paths, and the United States sitting roughly between them.
-
-The outlier at the top of the plot, showing GDP growth above 16% in
-2021, is Ireland. This unusually high figure reflects several structural
-factors in the way Ireland’s GDP is measured. Because many multinational
-corporations register their intellectual property and profits in
-Ireland, their global earnings are counted in Ireland’s national
-accounts even when most of the underlying economic activity takes place
-elsewhere. This accounting effect inflates headline GDP growth, making
-Ireland appear to grow far faster than the underlying domestic economy.
-As the de facto EU hub for many large global firms, Ireland’s GDP
-metrics are therefore highly sensitive to multinational profit flows
-rather than traditional economic output alone, which also is high at
-around 5% annually.
-
-Additionally, the noticeable uptick in Denmark’s 2024 growth reflects
-the extraordinary performance of its pharmaceutical sector, driven in
-particular by Novo Nordisk. Recent estimates indicate that the company
-alone contributed roughly half of Denmark’s total GDP growth during the
-last 2 years, amplifying the country’s post-pandemic recovery figures.
-
-The animation helps reveal not just the magnitude of growth changes, but
-also the timing and steepness of each country’s trajectory. This dynamic
-presentation makes it easier to see how the shock of 2020 unfolded and
-how different economies diverged in the years that followed.
-
 ### Plot 5: Distribution of Post-Pandemic GDP Growth by Region
 
 ``` r
@@ -691,3 +525,169 @@ plot6_region_boxplot
 ```
 
 <img src="memo_files/figure-gfm/region-gdp-distribution-1.png" alt="Boxplot showing the distribution of annual GDP growth from 2021 to 2024 across World Bank regions. South Asia (represented by India) has the highest median growth but high variability. Emerging markets in East Asia and Latin America show wider ranges of growth, while North America and Europe &amp; Central Asia show tighter distributions, indicating more stable but moderate recovery."  />
+
+#### Additional information and description for each plot:\*\*
+
+For step 2, the dataset originally had years (2018–2024) as columns,
+which makes it wide. pivot_longer() converts it into a tidy long format
+with Year and GDP_Growth columns, making it easier to plot over time.
+
+#### Final plot Description:
+
+The final plot compares the average GDP per capita of 46 countries to
+their average annual GDP growth from 2021 to 2024. Each point represents
+one country, with colors distinguishing OECD members from non members. A
+clear pattern emerges across the scatter. Countries with higher GDP per
+capita, which are mostly OECD members, experienced noticeably weaker
+economic growth in the post COVID period. In comparison, lower income
+economies, which are mostly non OECD members, saw stronger and more
+rapid growth. The negative slope of the trendline displays this
+relationship.
+
+India, the strongest performer in the plot, sits high on the plot with
+low GDP per capita but very fast growth. South Africa is placed lower,
+but still fits the pattern of non OECD economies growing more quickly
+than the wealthier OECD countries to the right. Denmark and the United
+States are located among the higher income cluster, where growth is
+solid but much slower than in emerging economies.
+
+This plot helps show the broader post pandemic dynamic. Advanced
+economies recovered steadily but without dramatic acceleration, while
+several emerging economies grew rapidly as they caught up from earlier
+downturns and benefited from expanding domestic markets. The
+visualization highlights this contrast and provides a clear way to
+compare these economic trajectories across income levels.
+
+#### Plot 1 Description:
+
+This line plot tracks GDP growth for Denmark, India, South Africa, and
+the United States from 2018 to 2024, allowing for a comparison of
+economic performance before, during, and after the COVID-19 pandemic.
+The plot highlights the collapse in growth for all four countries in
+2020, followed by their rebound in 2021 and the more moderate variations
+that follow through 2024.
+
+The goal of this visualization is not only to measure post-COVID
+recovery but also to show the broader economic trajectory each country
+has taken across three phases: pre-pandemic stability, the sharp
+contraction in 2020, and the uneven recovery that followed. The four
+countries were chosen deliberately to represent different continents and
+to contrast two OECD members (Denmark and the United States) with two
+non-OECD economies (India and South Africa).
+
+A few broader patterns stand out. India shows the most dramatic swings,
+with the steepest decline during the pandemic and the strongest rebound
+immediately afterward. This reflects a common pattern among fast-growing
+emerging economies, which tend to expand rapidly in good years but also
+contract more sharply during global shocks. In contrast, the United
+States and Denmark display more moderate movements around the baseline,
+characteristic of advanced economies with steadier long-term growth
+dynamics. South Africa sits between these extremes, with a slower
+recovery and more modest post-2021 growth.
+
+Taken together, our plot shows how different country’s economic
+structures shape their vulnerability and resilience. High-growth
+emerging economies like India experience far more volatility, while more
+advanced OECD economies drop and recover more gradually.
+
+#### Plot 2 Description:
+
+This bar plot displays the top fifteen countries by average annual GDP
+growth over the period from 2021 to 2024. The values shown represent the
+mean growth rate across these four post-pandemic years. This helps
+smooth out year-to-year swings and gives a clearer sense of each
+country’s overall recovery strength.
+
+India stands out clearly as the strongest performer in the dataset, with
+average annual growth close to 8 percent. Türkiye, Ireland, and China
+follow, each with averages near or slightly above 6 percent. The
+remaining countries decline gradually down the ranking, but all still
+exhibit relatively solid performance compared with the broader dataset.
+Because this plot only shows the fifteen best-performing nations, even
+the countries at the bottom of this list grew faster on average than
+roughly thirty other countries not included in the chart.
+
+A broader pattern is visible as well. Many of the economies near the top
+of the ranking are either large emerging markets or countries that
+experienced strong post-COVID rebounds driven by domestic demand,
+targeted sector expansion, or favorable structural trends. Countries
+further down the list are often smaller advanced economies whose growth
+rates tend to be steadier and more moderate. Taken together, the plot
+highlights how uneven the post-pandemic recovery has been across the
+world, with some nations surging ahead while others regained momentum at
+a slower pace.
+
+#### Plot 3 Description:
+
+The boxplot compares GDP growth distributions for the two recovery
+categories, Booming and Recovering, over the period from 2021 to 2024.
+Most countries in the dataset fall into the Booming category, which
+shows that a large share of both OECD and non-OECD economies experienced
+average annual growth above 3 percent during the post-COVID recovery.
+The Recovering category has fewer countries and shows a noticeably lower
+median rate of growth.
+
+Initially, we wanted to add a category named “stagnating” but we decided
+against doing so, as no single country in our datasets had average
+growth in negative levels during the selected time period, which would
+have classified them as stagnating.
+
+The Booming group has a wider range of values and includes one clear
+outlier at the top, which represents Ireland’s unusually high
+post-pandemic growth. The Recovering group is more tightly clustered,
+with values concentrated closer to zero.
+
+A broader pattern also emerges from the distribution. Many advanced
+economies, such as Germany, Austria, Finland, and the Netherlands, show
+slower growth and therefore appear more often in the Recovering
+category. This reflects typical features of mature, high-income
+economies, which tend to expand at a steadier and slower pace. In
+contrast, several emerging and developing economies in Asia and Africa
+experienced rapid post-COVID rebounds driven by rising domestic demand,
+expanding labor markets, and catch-up growth. These types of countries
+tend to be in the Booming category.
+
+#### Plot 4 Description:
+
+The animated line plot illustrates how GDP growth evolved across world
+regions from 2018 to 2024, with a particular emphasis on the impact of
+the COVID-19 recession in 2020 and the recovery that followed. Each
+country in the dataset is shown as a faint grey line, allowing the
+broader regional distribution to remain visible in the background. Four
+countries: India, the United States, Denmark, and South Africa, are
+highlighted in distinct colors so their trajectories can be compared
+more easily.
+
+As the animation progresses year by year, the viewer can follow how
+growth levels change over time. All countries move sharply downward in
+2020, which is marked by a red-shaded band to visually identify the
+COVID downturn. After this low point, most economies rebound in 2021,
+but the extent of the recovery differs substantially. India stands out
+as the strongest performer, climbing dramatically above the others in
+the immediate post-Covid period. The remaining highlighted countries
+recover more moderately, with South Africa and Denmark following slower,
+flatter paths, and the United States sitting roughly between them.
+
+The outlier at the top of the plot, showing GDP growth above 16% in
+2021, is Ireland. This unusually high figure reflects several structural
+factors in the way Ireland’s GDP is measured. Because many multinational
+corporations register their intellectual property and profits in
+Ireland, their global earnings are counted in Ireland’s national
+accounts even when most of the underlying economic activity takes place
+elsewhere. This accounting effect inflates headline GDP growth, making
+Ireland appear to grow far faster than the underlying domestic economy.
+As the de facto EU hub for many large global firms, Ireland’s GDP
+metrics are therefore highly sensitive to multinational profit flows
+rather than traditional economic output alone, which also is high at
+around 5% annually.
+
+Additionally, the noticeable uptick in Denmark’s 2024 growth reflects
+the extraordinary performance of its pharmaceutical sector, driven in
+particular by Novo Nordisk. Recent estimates indicate that the company
+alone contributed roughly half of Denmark’s total GDP growth during the
+last 2 years, amplifying the country’s post-pandemic recovery figures.
+
+The animation helps reveal not just the magnitude of growth changes, but
+also the timing and steepness of each country’s trajectory. This dynamic
+presentation makes it easier to see how the shock of 2020 unfolded and
+how different economies diverged in the years that followed.
